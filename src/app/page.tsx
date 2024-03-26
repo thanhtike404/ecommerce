@@ -6,6 +6,7 @@ import { IoIosArrowForward } from "react-icons/io";
 import Image from "next/image";
 import NewReleaseCard from "@/components/cards/NewReleaseCard";
 import Link from "next/link";
+import SingleSlider from "@/components/sliders/SingleSlider";
 export default function Home() {
 	return (
 		<div className="w-full flex flex-col items-center">
@@ -37,7 +38,9 @@ export default function Home() {
 						<br className="hidden md:block" />
 						special exclusive offers
 					</p>
-					<ViewBtn>View</ViewBtn>
+					<Link href={"/"}>
+						<ViewBtn>View</ViewBtn>
+					</Link>
 				</div>
 				<div className="w-full h-[400px] lg:w-5/12 grid grid-cols-12 gap-2">
 					<div className="w-full h-auto bg-gray-800 col-span-6 row-span-2 rounded-xl flex flex-col justify-end overflow-hidden">
@@ -130,6 +133,9 @@ export default function Home() {
 						View More <IoIosArrowForward />
 					</ViewMoreBtn>
 				</Link>
+			</section>
+			<section className="container">
+				<SingleSlider />
 			</section>
 		</div>
 	);

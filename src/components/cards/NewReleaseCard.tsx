@@ -10,12 +10,12 @@ const cards = [
 
 export default function NewReleaseCard() {
 	return (
-		<div className="grid grid-cols-1 lg:grid-cols-4 gap-2">
+		<div className="w-full grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-2">
 			{cards.map((card, index) => (
 				<div
 					key={index}
 					style={{ backgroundColor: card.backgound }}
-					className="relative h-[200px] flex items-end justify-between text-white rounded-xl p-4"
+					className="relative h-[200px] flex items-end justify-between text-white rounded-xl p-5"
 				>
 					<div className="shrink-0">
 						<h3 className="font-semibold">
