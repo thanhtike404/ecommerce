@@ -9,5 +9,5 @@
 }
 
 .container {
-	@apply px-5 md:px-14 lg:px-24 py-10 md:py-12 lg:py-16;
+	@apply px-5 md:px-14 lg:px-32 py-14 md:py-12 lg:py-20;
 }
