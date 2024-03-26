@@ -1,6 +1,6 @@
 import React from "react";
 
-export default function viewMoreBtn({
+export default function ViewMoreBtn({
 	children,
 }: Readonly<{
 	children: React.ReactNode;

@@ -8,6 +8,10 @@
 	box-sizing: border-box;
 }
 
+body {
+	scroll-behavior: smooth;
+}
+
 .container {
-	@apply px-5 md:px-14 lg:px-32 py-14 md:py-12 lg:py-20;
+	@apply px-5 md:px-14 lg:px-36 py-10;
 }
