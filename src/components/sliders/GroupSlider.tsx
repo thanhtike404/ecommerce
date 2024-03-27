@@ -13,7 +13,28 @@ const cards = [
 		point: 600,
 	},
 	{
-		src: "/cardImgs/vape1.png",
+		src: "/cardImgs/vape2.png",
+		title: "Refreshing Mint",
+		price: 30000,
+		oldPrice: 30000,
+		point: 600,
+	},
+	{
+		src: "/cardImgs/vape3.png",
+		title: "Refreshing Mint",
+		price: 30000,
+		oldPrice: 30000,
+		point: 600,
+	},
+	{
+		src: "/cardImgs/vape4.png",
+		title: "Refreshing Mint",
+		price: 30000,
+		oldPrice: 30000,
+		point: 600,
+	},
+	{
+		src: "/cardImgs/vape5.png",
 		title: "Refreshing Mint",
 		price: 30000,
 		oldPrice: 30000,
@@ -27,7 +48,28 @@ const cards = [
 		point: 600,
 	},
 	{
-		src: "/cardImgs/vape1.png",
+		src: "/cardImgs/vape2.png",
+		title: "Refreshing Mint",
+		price: 30000,
+		oldPrice: 30000,
+		point: 600,
+	},
+	{
+		src: "/cardImgs/vape3.png",
+		title: "Refreshing Mint",
+		price: 30000,
+		oldPrice: 30000,
+		point: 600,
+	},
+	{
+		src: "/cardImgs/vape4.png",
+		title: "Refreshing Mint",
+		price: 30000,
+		oldPrice: 30000,
+		point: 600,
+	},
+	{
+		src: "/cardImgs/vape5.png",
 		title: "Refreshing Mint",
 		price: 30000,
 		oldPrice: 30000,
@@ -41,7 +83,28 @@ const cards = [
 		point: 600,
 	},
 	{
-		src: "/cardImgs/vape1.png",
+		src: "/cardImgs/vape2.png",
+		title: "Refreshing Mint",
+		price: 30000,
+		oldPrice: 30000,
+		point: 600,
+	},
+	{
+		src: "/cardImgs/vape3.png",
+		title: "Refreshing Mint",
+		price: 30000,
+		oldPrice: 30000,
+		point: 600,
+	},
+	{
+		src: "/cardImgs/vape4.png",
+		title: "Refreshing Mint",
+		price: 30000,
+		oldPrice: 30000,
+		point: 600,
+	},
+	{
+		src: "/cardImgs/vape5.png",
 		title: "Refreshing Mint",
 		price: 30000,
 		oldPrice: 30000,
@@ -55,49 +118,28 @@ const cards = [
 		point: 600,
 	},
 	{
-		src: "/cardImgs/vape1.png",
+		src: "/cardImgs/vape2.png",
 		title: "Refreshing Mint",
 		price: 30000,
 		oldPrice: 30000,
 		point: 600,
 	},
 	{
-		src: "/cardImgs/vape1.png",
+		src: "/cardImgs/vape3.png",
 		title: "Refreshing Mint",
 		price: 30000,
 		oldPrice: 30000,
 		point: 600,
 	},
 	{
-		src: "/cardImgs/vape1.png",
+		src: "/cardImgs/vape4.png",
 		title: "Refreshing Mint",
 		price: 30000,
 		oldPrice: 30000,
 		point: 600,
 	},
 	{
-		src: "/cardImgs/vape1.png",
-		title: "Refreshing Mint",
-		price: 30000,
-		oldPrice: 30000,
-		point: 600,
-	},
-	{
-		src: "/cardImgs/vape1.png",
-		title: "Refreshing Mint",
-		price: 30000,
-		oldPrice: 30000,
-		point: 600,
-	},
-	{
-		src: "/cardImgs/vape1.png",
-		title: "Refreshing Mint",
-		price: 30000,
-		oldPrice: 30000,
-		point: 600,
-	},
-	{
-		src: "/cardImgs/vape1.png",
+		src: "/cardImgs/vape5.png",
 		title: "Refreshing Mint",
 		price: 30000,
 		oldPrice: 30000,
@@ -117,18 +159,16 @@ export default function GroupSlider() {
 	return (
 		<div className="w-full relative">
 			<div className="relative w-full h-full overflow-hidden flex items-center gap-2 lg:gap-4">
-				<div
-					className="flex items-center rounded-xl text-white gap-2"
-					style={{
-						transform: `translateX(-${currentIndex * 20}%)`,
-						transition: "transform 0.5s ease",
-					}}
-				>
-					{cards.map((card, index) => (
-						<div
-							key={index}
-							className="relative flex flex-col items-center"
-						>
+				{cards.map((card, index) => (
+					<div
+						key={index}
+						className="flex items-center rounded-xl text-white gap-2"
+						style={{
+							transform: `translateX(-${currentIndex * 100}%)`,
+							transition: "transform 0.5s ease",
+						}}
+					>
+						<div className="relative flex flex-col items-center">
 							<div className="w-[180px] h-[180px] bg-grayColor rounded-xl">
 								<Image
 									src={card.src}
@@ -146,8 +186,8 @@ export default function GroupSlider() {
 								{card.point} Points
 							</p>
 						</div>
-					))}
-				</div>
+					</div>
+				))}
 			</div>
 			{/* Right Arrow */}
 			<div

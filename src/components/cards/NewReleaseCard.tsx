@@ -2,10 +2,10 @@ import React from "react";
 import Image from "next/image";
 
 const cards = [
-	{ backgound: "#F5DD61" },
-	{ backgound: "#FF55BB" },
-	{ backgound: "#A1EEBD" },
-	{ backgound: "#7BD3EA" },
+	{ backgound: "#F5DD61", src: "/cardImgs/vape1.png" },
+	{ backgound: "#FF55BB", src: "/cardImgs/vape2.png" },
+	{ backgound: "#A1EEBD", src: "/cardImgs/vape3.png" },
+	{ backgound: "#7BD3EA", src: "/cardImgs/vape4.png" },
 ];
 
 export default function NewReleaseCard() {
@@ -25,7 +25,7 @@ export default function NewReleaseCard() {
 						<p>30000 MMK</p>
 					</div>
 					<Image
-						src="/cardImgs/vape1.png"
+						src={card.src}
 						alt="vape"
 						width={200}
 						height={200}

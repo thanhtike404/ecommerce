@@ -47,7 +47,7 @@ export default function Home() {
 				<div className="w-full h-[400px] lg:w-5/12 grid grid-cols-12 gap-2">
 					<div className="w-full h-auto bg-gray-800 col-span-6 row-span-2 rounded-xl flex flex-col justify-end overflow-hidden">
 						<Image
-							src="/cardImgs/vape1.png"
+							src="/cardImgs/vape3.png"
 							alt="vape"
 							width={200}
 							height={200}
@@ -71,7 +71,7 @@ export default function Home() {
 					</div>
 					<div className="relative w-full bg-gray-800 col-span-6 row-span-1 rounded-xl overflow-hidden">
 						<Image
-							src="/cardImgs/vape1.png"
+							src="/cardImgs/vape4.png"
 							alt="vape"
 							width={200}
 							height={200}
@@ -93,7 +93,7 @@ export default function Home() {
 					</div>
 					<div className="relative w-full bg-gray-800 col-span-6 row-span-1 rounded-xl overflow-hidden">
 						<Image
-							src="/cardImgs/vape1.png"
+							src="/cardImgs/vape5.png"
 							alt="vape"
 							width={200}
 							height={200}

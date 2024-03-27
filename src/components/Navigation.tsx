@@ -28,7 +28,7 @@ export default function Navigation() {
 
 	return (
 		<nav
-			className={`fixed top-0 w-full flex items-start justify-between px-5 md:px-14 lg:px-36 py-2 md:py-4 z-10 ${
+			className={`fixed top-0 w-full flex items-start justify-between px-5 md:px-14 lg:px-36 py-2 md:py-4 z-50 ${
 				scrolling ? " bg-black/60 backdrop-blur-md" : ""
 			}${navMenuOpen ? " h-screen bg-black/60 backdrop-blur-md" : ""}`}
 		>

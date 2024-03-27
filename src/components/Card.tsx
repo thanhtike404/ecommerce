@@ -12,7 +12,7 @@ const cards = [
 	},
 	{
 		discount: 25,
-		src: "/cardImgs/vape1.png",
+		src: "/cardImgs/vape2.png",
 		title: "Refreshing Mint",
 		price: 30000,
 		oldPrice: 30000,
@@ -20,7 +20,7 @@ const cards = [
 	},
 	{
 		discount: 25,
-		src: "/cardImgs/vape1.png",
+		src: "/cardImgs/vape3.png",
 		title: "Refreshing Mint",
 		price: 30000,
 		oldPrice: 30000,
@@ -28,7 +28,7 @@ const cards = [
 	},
 	{
 		discount: 25,
-		src: "/cardImgs/vape1.png",
+		src: "/cardImgs/vape4.png",
 		title: "Refreshing Mint",
 		price: 30000,
 		oldPrice: 30000,
@@ -36,7 +36,7 @@ const cards = [
 	},
 	{
 		discount: 25,
-		src: "/cardImgs/vape1.png",
+		src: "/cardImgs/vape5.png",
 		title: "Refreshing Mint",
 		price: 30000,
 		oldPrice: 30000,
