@@ -58,14 +58,14 @@ export default function Carousel() {
 			{/* Left Arrow */}
 			<div
 				onClick={prevSlide}
-				className="hidden group-hover:block absolute top-[50%] -translate-x-0 translate-y-[-50%] left-5 text-2xl rounded-xl px-1.5 lg:px-3 py-10 md:py-14 lg:py-20 bg-black/20 backdrop-blur-md text-white cursor-pointer"
+				className="hidden group-hover:block absolute top-[50%] -translate-x-0 translate-y-[-50%] left-5 text-2xl rounded-xl px-1.5 lg:px-3 py-10 md:py-14 lg:py-20 bg-black/20 backdrop-blur-md text-white cursor-pointer border border-gray-400/50"
 			>
 				<BsChevronCompactLeft size={30} />
 			</div>
 			{/* Right Arrow */}
 			<div
 				onClick={nextSlide}
-				className="hidden group-hover:block absolute top-[50%] -translate-x-0 translate-y-[-50%] right-5 text-2xl rounded-xl px-1.5 lg:px-3 py-10 md:py-14 lg:py-20 bg-black/20 backdrop-blur-md text-white cursor-pointer"
+				className="hidden group-hover:block absolute top-[50%] -translate-x-0 translate-y-[-50%] right-5 text-2xl rounded-xl px-1.5 lg:px-3 py-10 md:py-14 lg:py-20 bg-black/20 backdrop-blur-md text-white cursor-pointer border border-gray-400/50"
 			>
 				<BsChevronCompactRight size={30} />
 			</div>

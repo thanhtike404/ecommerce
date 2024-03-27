@@ -6,7 +6,7 @@ export default function ViewMoreBtn({
 	children: React.ReactNode;
 }>) {
 	return (
-		<div className="bg-grayColor px-24 py-2 flex items-center gap-1 rounded-full">
+		<div className="bg-grayColor px-20 md:px-24 py-2 flex items-center gap-1 rounded-full">
 			{children}
 		</div>
 	);

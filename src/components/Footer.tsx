@@ -11,8 +11,8 @@ const socialImages = [
 
 export default function Footer() {
 	return (
-		<footer className="w-full mx-auto container space-y-4">
-			<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-10 items-start ">
+		<footer className="w-full mx-auto container space-y-4 md:space-y-0">
+			<div className="w-full grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-x-6 gap-y-6 lg:gap-y-0  items-start ">
 				<div className="space-y-4">
 					<h3 className="text-2xl font-semibold">Customer Service</h3>
 					<p>Terms&Privacy Policy</p>
@@ -36,8 +36,6 @@ export default function Footer() {
 					<h3 className="text-2xl font-semibold ">Download Our App</h3>
 					<Image src={"/qr.png"} alt="QR code" width={150} height={150} />
 				</div>
-			</div>
-			<div className="flex flex-col md:flex-row items-start gap-10 md:gap-24 ">
 				<div className="space-y-4">
 					<h3 className="text-2xl font-semibold ">Payment</h3>
 					<div className="flex gap-4">
@@ -72,7 +70,7 @@ export default function Footer() {
 					</div>
 				</div>
 			</div>
-			<p className="text-sm text-center text-gray-400 pt-10">
+			<p className="text-sm text-center text-gray-400 pt-16">
 				Copyright 2023 by AA Co.,Ltd. All rights reserved.
 			</p>
 		</footer>

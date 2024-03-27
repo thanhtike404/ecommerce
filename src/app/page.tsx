@@ -7,6 +7,8 @@ import Image from "next/image";
 import NewReleaseCard from "@/components/cards/NewReleaseCard";
 import Link from "next/link";
 import SingleSlider from "@/components/sliders/SingleSlider";
+import GroupSlider from "@/components/sliders/GroupSlider";
+import ComponentSlide from "@/components/sliders/ComponentSlide";
 export default function Home() {
 	return (
 		<div className="w-full flex flex-col items-center">
@@ -38,7 +40,7 @@ export default function Home() {
 						<br className="hidden md:block" />
 						special exclusive offers
 					</p>
-					<Link href={"/"}>
+					<Link href={"/"} className="w-20">
 						<ViewBtn>View</ViewBtn>
 					</Link>
 				</div>
@@ -134,8 +136,15 @@ export default function Home() {
 					</ViewMoreBtn>
 				</Link>
 			</section>
+
+			{/* =========== Fourth Component ========== */}
 			<section className="container">
 				<SingleSlider />
+			</section>
+
+			{/* =========== Fifth Component ========== */}
+			<section className="container">
+				<ComponentSlide />
 			</section>
 		</div>
 	);
