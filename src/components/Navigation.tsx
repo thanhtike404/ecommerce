@@ -5,7 +5,7 @@ import { IoSearch } from 'react-icons/io5';
 import { AiOutlineShoppingCart } from 'react-icons/ai';
 import { IoMdMenu } from 'react-icons/io';
 import { GrClose } from 'react-icons/gr';
-import SignOutButton from '@/app/auth/signout/page';
+import SignOutButton from '@/app/(app)/auth/signout/page';
 import { useSession } from 'next-auth/react';
 import CartSlider from '@/components/CartSlider';
 
