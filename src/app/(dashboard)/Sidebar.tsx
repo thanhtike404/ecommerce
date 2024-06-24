@@ -1,5 +1,6 @@
 import React from 'react';
 import Link from 'next/link';
+import DarkMode from '@/components/DarkMode';
 import {
   ChevronLeft,
   ChevronRight,
@@ -108,6 +109,7 @@ function Sidebar() {
             </Link>
           </TooltipTrigger>
           <TooltipContent side="right">Settings</TooltipContent>
+          <DarkMode />
         </Tooltip>
       </nav>
     </aside>
