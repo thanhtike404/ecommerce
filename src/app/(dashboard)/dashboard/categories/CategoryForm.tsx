@@ -13,13 +13,24 @@ import { Label } from '@/components/ui/label';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { categorySchema, CategoryFormValues } from './categorySchema';
-import { useMutation } from '@tanstack/react-query';
+import { useRouter } from 'next/navigation';
+import { useToast } from '@/components/ui/use-toast';
+
+import {
+  QueryClient,
+  useMutation,
+  useQueryClient,
+} from '@tanstack/react-query';
 import axios from 'axios';
 
 export default function CategoryForm() {
+  const { toast } = useToast();
+  const router = useRouter();
+  const queryClient = useQueryClient();
   const {
     register,
     handleSubmit,
+    reset,
     formState: { errors },
   } = useForm<CategoryFormValues>({
     resolver: zodResolver(categorySchema),
@@ -27,13 +38,39 @@ export default function CategoryForm() {
   const [preview, setPreview] = useState<string | null>(null);
 
   const mutation = useMutation({
-    mutationFn: (data: Object) =>
+    mutationFn: (data: CategoryFormValues) =>
       axios.post('/api/v1/dashboard/categories', data),
-    onSuccess: async (data) => {
-      console.log(data, 'success");');
+    onSuccess: async (data: any, formData: FormData) => {
+      const { url, fields } = data.data;
+
+      // Prepare data for S3 upload
+      const s3FormData = new FormData();
+      Object.entries(fields).forEach(([key, value]) => {
+        s3FormData.append(key, value as string);
+      });
+      s3FormData.append('file', formData.get('categoryIcon') as Blob);
+
+      // Upload to S3
+      await axios.post(url, s3FormData);
     },
-    onSettled: async () => {
-      console.log("I'm second!");
+    onSettled: (data: any, error: any, variables: CategoryFormValues) => {
+      if (!error) {
+        toast({
+          title: 'Success',
+          description: 'Category created successfully',
+        });
+        reset(); // Reset the form after successful submission
+        setPreview(null);
+        queryClient.invalidateQueries('categories');
+        router.refresh();
+      } else {
+        toast({
+          title: 'Error',
+          description: 'Failed to create category',
+          status: 'error',
+        });
+      }
+      console.log('Mutation is settled.');
     },
   });
 
@@ -86,7 +123,7 @@ export default function CategoryForm() {
             />
             {errors.categoryIcon && (
               <p className="text-red-500 text-xs italic">
-                {errors.categoryIcon.message}
+                {errors.categoryIcon.message as string}
               </p>
             )}
             {preview && (

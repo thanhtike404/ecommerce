@@ -6,7 +6,11 @@ import Menubar from './Menubar';
 import ReactQueryProvider from '@/providers/queryProvider';
 import ThemeProvider from '@/providers/ThemeProvider';
 import Provider from '@/providers/dashboard/provider';
-export default function RootLayout({ children }) {
+export default function RootLayout({
+  children,
+}: Readonly<{
+  children: React.ReactNode;
+}>) {
   return (
     <html lang="en">
       <body>

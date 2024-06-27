@@ -6,6 +6,14 @@ const nextConfig = {
         protocol: 'https',
         hostname: 'via.placeholder.com',
       },
+      {
+        protocol: 'https',
+        hostname: 'example.com',
+      },
+      {
+        protocol: 'https',
+        hostname: 'posbucket12.s3.ap-southeast-1.amazonaws.com',
+      },
     ],
   },
 };

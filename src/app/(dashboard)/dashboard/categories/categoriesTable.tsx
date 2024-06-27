@@ -1,9 +1,10 @@
 'use client';
 
 import * as React from 'react';
+import axios from 'axios';
+import { useToast } from '@/components/ui/use-toast';
 import {
   ColumnDef,
-  ColumnFiltersState,
   SortingState,
   VisibilityState,
   flexRender,
@@ -13,20 +14,15 @@ import {
   getSortedRowModel,
   useReactTable,
 } from '@tanstack/react-table';
-import { ArrowUpDown, ChevronDown, MoreHorizontal } from 'lucide-react';
-
+import { ChevronDown } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { Checkbox } from '@/components/ui/checkbox';
+import { Input } from '@/components/ui/input';
 import {
   DropdownMenu,
   DropdownMenuCheckboxItem,
   DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import { Input } from '@/components/ui/input';
 import {
   Table,
   TableBody,
@@ -35,7 +31,8 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
-
+import { useQueryClient, useQuery, useMutation } from '@tanstack/react-query';
+import Image from 'next/image';
 export type CategoryTableProps = {
   categories: Array<{
     id: string;
@@ -55,7 +52,7 @@ const formatDate = (dateString: string) => {
   }).format(new Date(dateString));
 };
 
-export const columns = [
+const columns: ColumnDef<any>[] = [
   {
     accessorKey: 'id',
     header: 'Id',
@@ -65,8 +62,16 @@ export const columns = [
     header: 'Name',
   },
   {
-    accessorKey: 'imageUrl',
-    header: 'Image URL',
+    accessorKey: 'iconUrl',
+    header: 'Icon',
+    cell: ({ row }) => (
+      <Image
+        width={50}
+        height={50}
+        src={row.getValue('iconUrl')}
+        alt={row.getValue('name')}
+      />
+    ),
   },
   {
     accessorKey: 'createdAt',
@@ -82,34 +87,54 @@ export const columns = [
     id: 'actions',
     header: 'Actions',
     cell: ({ row, table }) => {
+      const { toast } = useToast();
+      const queryClient = useQueryClient();
+      const mutation = useMutation({
+        mutationFn: async (id) =>
+          await axios.delete(`/api/v1/dashboard/categories/${id}`),
+        onSuccess: (data) => {
+          queryClient.invalidateQueries('categories');
+          toast({
+            title: 'Success',
+            description: 'Category deleted successfully',
+          });
+        },
+      });
+
       const handleDelete = () => {
-        const updatedData = table
-          .getData()
-          .filter((category: any) => category.id !== row.original.id);
-        table.setData(updatedData);
+        mutation.mutate(row.original.id);
       };
 
       return (
-        <Button variant="danger" onClick={handleDelete}>
-          Delete
-        </Button>
+        <div className="space-x-2">
+          <Button onClick={handleDelete}>Delete</Button>
+          <Button onClick={handleDelete}>Updaet</Button>
+        </div>
       );
     },
   },
 ];
 
 export default function CategoryTable({ categories }: CategoryTableProps) {
-  const [data, setData] = React.useState(categories);
+  const queryClient = useQueryClient();
   const [sorting, setSorting] = React.useState<SortingState>([]);
-  const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
-    []
-  );
+  const [columnFilters, setColumnFilters] = React.useState([]);
   const [columnVisibility, setColumnVisibility] =
     React.useState<VisibilityState>({});
   const [rowSelection, setRowSelection] = React.useState({});
 
+  const fetchCategories = async () => {
+    const res = await fetch('/api/v1/dashboard/categories');
+    return res.json();
+  };
+
+  const { data, isLoading, isError } = useQuery({
+    queryKey: ['categories'],
+    queryFn: fetchCategories,
+  });
+
   const table = useReactTable({
-    data,
+    data: data || categories,
     columns,
     onSortingChange: setSorting,
     onColumnFiltersChange: setColumnFilters,
@@ -125,12 +150,13 @@ export default function CategoryTable({ categories }: CategoryTableProps) {
       columnVisibility,
       rowSelection,
     },
-    // Set the data state when the data is updated
-    setData,
   });
 
+  if (isLoading) return <div>Loading...</div>;
+  if (isError) return <div>Error loading data</div>;
+
   return (
-    <div className="">
+    <div>
       <div className="flex items-center py-4">
         <Input
           placeholder="Filter categories..."
