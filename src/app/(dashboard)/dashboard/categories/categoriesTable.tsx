@@ -1,20 +1,7 @@
 'use client';
 
 import * as React from 'react';
-import axios from 'axios';
 import { useToast } from '@/components/ui/use-toast';
-import {
-  ColumnDef,
-  SortingState,
-  VisibilityState,
-  flexRender,
-  getCoreRowModel,
-  getFilteredRowModel,
-  getPaginationRowModel,
-  getSortedRowModel,
-  useReactTable,
-} from '@tanstack/react-table';
-import { ChevronDown } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import {
@@ -32,101 +19,39 @@ import {
   TableRow,
 } from '@/components/ui/table';
 import { useQueryClient, useQuery, useMutation } from '@tanstack/react-query';
-import Image from 'next/image';
+import {
+  ColumnDef,
+  SortingState,
+  VisibilityState,
+  flexRender,
+  getCoreRowModel,
+  getFilteredRowModel,
+  getPaginationRowModel,
+  getSortedRowModel,
+  useReactTable,
+} from '@tanstack/react-table';
+import { ChevronDown } from 'lucide-react';
+
+import useCategoryStore from '@/store/dashboard/categoryStore';
+import { columns } from './categoryTableColumns';
+import { fetchCategories } from './categoryTableUtils';
+
 export type CategoryTableProps = {
   categories: Array<{
     id: string;
     name: string;
-    imageUrl: string;
+    iconUrl: string;
     createdAt: string;
     updatedAt: string;
   }>;
 };
 
-// Date formatting function
-const formatDate = (dateString: string) => {
-  return new Intl.DateTimeFormat('en-US', {
-    year: 'numeric',
-    month: 'short',
-    day: 'numeric',
-  }).format(new Date(dateString));
-};
-
-const columns: ColumnDef<any>[] = [
-  {
-    accessorKey: 'id',
-    header: 'Id',
-  },
-  {
-    accessorKey: 'name',
-    header: 'Name',
-  },
-  {
-    accessorKey: 'iconUrl',
-    header: 'Icon',
-    cell: ({ row }) => (
-      <Image
-        width={50}
-        height={50}
-        src={row.getValue('iconUrl')}
-        alt={row.getValue('name')}
-      />
-    ),
-  },
-  {
-    accessorKey: 'createdAt',
-    header: 'Created At',
-    cell: ({ row }) => formatDate(row.getValue('createdAt')),
-  },
-  {
-    accessorKey: 'updatedAt',
-    header: 'Updated At',
-    cell: ({ row }) => formatDate(row.getValue('updatedAt')),
-  },
-  {
-    id: 'actions',
-    header: 'Actions',
-    cell: ({ row, table }) => {
-      const { toast } = useToast();
-      const queryClient = useQueryClient();
-      const mutation = useMutation({
-        mutationFn: async (id) =>
-          await axios.delete(`/api/v1/dashboard/categories/${id}`),
-        onSuccess: (data) => {
-          queryClient.invalidateQueries('categories');
-          toast({
-            title: 'Success',
-            description: 'Category deleted successfully',
-          });
-        },
-      });
-
-      const handleDelete = () => {
-        mutation.mutate(row.original.id);
-      };
-
-      return (
-        <div className="space-x-2">
-          <Button onClick={handleDelete}>Delete</Button>
-          <Button onClick={handleDelete}>Updaet</Button>
-        </div>
-      );
-    },
-  },
-];
-
 export default function CategoryTable({ categories }: CategoryTableProps) {
   const queryClient = useQueryClient();
-  const [sorting, setSorting] = React.useState<SortingState>([]);
+  const [sorting, setSorting] = React.useState([]);
   const [columnFilters, setColumnFilters] = React.useState([]);
-  const [columnVisibility, setColumnVisibility] =
-    React.useState<VisibilityState>({});
+  const [columnVisibility, setColumnVisibility] = React.useState({});
   const [rowSelection, setRowSelection] = React.useState({});
-
-  const fetchCategories = async () => {
-    const res = await fetch('/api/v1/dashboard/categories');
-    return res.json();
-  };
 
   const { data, isLoading, isError } = useQuery({
     queryKey: ['categories'],
@@ -176,20 +101,16 @@ export default function CategoryTable({ categories }: CategoryTableProps) {
             {table
               .getAllColumns()
               .filter((column) => column.getCanHide())
-              .map((column) => {
-                return (
-                  <DropdownMenuCheckboxItem
-                    key={column.id}
-                    className="capitalize"
-                    checked={column.getIsVisible()}
-                    onCheckedChange={(value) =>
-                      column.toggleVisibility(!!value)
-                    }
-                  >
-                    {column.id}
-                  </DropdownMenuCheckboxItem>
-                );
-              })}
+              .map((column) => (
+                <DropdownMenuCheckboxItem
+                  key={column.id}
+                  className="capitalize"
+                  checked={column.getIsVisible()}
+                  onCheckedChange={(value) => column.toggleVisibility(!!value)}
+                >
+                  {column.id}
+                </DropdownMenuCheckboxItem>
+              ))}
           </DropdownMenuContent>
         </DropdownMenu>
       </div>
@@ -198,18 +119,16 @@ export default function CategoryTable({ categories }: CategoryTableProps) {
           <TableHeader>
             {table.getHeaderGroups().map((headerGroup) => (
               <TableRow key={headerGroup.id}>
-                {headerGroup.headers.map((header) => {
-                  return (
-                    <TableHead key={header.id}>
-                      {header.isPlaceholder
-                        ? null
-                        : flexRender(
-                            header.column.columnDef.header,
-                            header.getContext()
-                          )}
-                    </TableHead>
-                  );
-                })}
+                {headerGroup.headers.map((header) => (
+                  <TableHead key={header.id}>
+                    {header.isPlaceholder
+                      ? null
+                      : flexRender(
+                          header.column.columnDef.header,
+                          header.getContext()
+                        )}
+                  </TableHead>
+                ))}
               </TableRow>
             ))}
           </TableHeader>

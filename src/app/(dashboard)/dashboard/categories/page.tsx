@@ -15,6 +15,7 @@ async function page() {
       </div>
       <div className="flex justify-center w-full">
         <div className="w-full max-w-3xl">
+          <h3 className="mt-11 mb-2">Create Category</h3>
           <CategoryForm />
         </div>
       </div>
