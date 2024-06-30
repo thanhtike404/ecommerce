@@ -56,7 +56,7 @@ export const columns: ColumnDef<Category>[] = [
             height={50}
             src={row.getValue('iconUrl')}
             alt={row.getValue('name')}
-            onLoadingComplete={handleImageLoad}
+            onLoad={handleImageLoad}
           />
         </div>
       );

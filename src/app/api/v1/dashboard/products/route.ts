@@ -11,10 +11,21 @@ export const GET = async (request: NextRequest) => {
             name: true,
           },
         },
+
         stock: true,
       },
     });
     return NextResponse.json(products);
+  } catch (error) {
+    return NextResponse.json(error);
+  }
+};
+
+export const POST = async (request: NextRequest) => {
+  try {
+    const body = await request.formData();
+    console.log(body);
+    return NextResponse.json(body);
   } catch (error) {
     return NextResponse.json(error);
   }

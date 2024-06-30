@@ -4,9 +4,9 @@ import { useQueryClient } from '@tanstack/react-query';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { useRouter } from 'next/navigation';
-import { products } from './page'; // Importing the initial list of products
+// import { products } from './page'; // Importing the initial list of products
 
-function FilterForm() {
+function FilterForm({ products }) {
   const [search, setSearch] = useState('');
   const [minPrice, setMinPrice] = useState('');
   const [maxPrice, setMaxPrice] = useState('');
