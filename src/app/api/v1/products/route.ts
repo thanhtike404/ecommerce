@@ -1,10 +1,45 @@
-import { NextApiRequest, NextApiResponse } from 'next';
+import { NextRequest } from 'next/server';
 import prismaClient from '@/lib/db';
 import { NextResponse } from 'next/server';
 
-export const GET = async (req: NextApiRequest) => {
+export const GET = async (req: NextRequest) => {
   try {
+    const page = parseInt(req.nextUrl.searchParams.get('page') as string) || 1;
+
+    const search = (req.nextUrl.searchParams.get('search') as string) || '';
+    const minPrice =
+      parseFloat(req.nextUrl.searchParams.get('minPrice') as string) || 0;
+    const maxPriceParam = req.nextUrl.searchParams.get('maxPrice');
+    const maxPrice = maxPriceParam ? parseFloat(maxPriceParam) : Infinity;
+
+    const pageSize = 10;
+    const skip = (page - 1) * pageSize;
+
+    console.log('Search:', search);
+    console.log('Min Price:', minPrice);
+    console.log('Max Price:', maxPrice);
+
+    // Create price filter
+    const priceFilter: any = { gte: minPrice };
+    if (maxPrice !== Infinity) {
+      priceFilter.lte = maxPrice;
+    }
+
+    console.log('Price Filter:', priceFilter);
+
     const fetchProducts = await prismaClient.product.findMany({
+      where: {
+        name: {
+          contains: search,
+        },
+        stock: {
+          some: {
+            price: priceFilter,
+          },
+        },
+      },
+      skip: skip,
+      take: pageSize,
       include: {
         category: {
           select: {
@@ -15,6 +50,8 @@ export const GET = async (req: NextApiRequest) => {
       },
     });
 
+    console.log('Fetched Products:', fetchProducts);
+
     const products = fetchProducts.map((product) => {
       return {
         id: product.id,
@@ -24,8 +61,24 @@ export const GET = async (req: NextApiRequest) => {
       };
     });
 
-    return NextResponse.json(products);
+    const totalProducts = await prismaClient.product.count({
+      where: {
+        name: {
+          contains: search,
+        },
+        stock: {
+          some: {
+            price: priceFilter,
+          },
+        },
+      },
+    });
+    const totalPages = Math.ceil(totalProducts / pageSize);
+    const hasMore = page < totalPages;
+
+    return NextResponse.json({ products, page, totalPages, hasMore });
   } catch (error) {
-    console.error(error);
+    console.error('Error fetching products:', error);
+    return NextResponse.json({ status: 500 });
   }
 };

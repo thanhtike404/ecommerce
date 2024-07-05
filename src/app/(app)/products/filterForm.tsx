@@ -4,17 +4,28 @@ import { useQueryClient } from '@tanstack/react-query';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { useRouter } from 'next/navigation';
-// import { products } from './page'; // Importing the initial list of products
 
-function FilterForm({ products }) {
+interface Product {
+  title: string;
+  price: string;
+}
+
+interface FilterFormProps {
+  products: Product[];
+}
+
+function FilterForm({ products }: FilterFormProps) {
   const [search, setSearch] = useState('');
   const [minPrice, setMinPrice] = useState('');
   const [maxPrice, setMaxPrice] = useState('');
   const queryClient = useQueryClient();
   const router = useRouter();
 
-  const handleSearch = (searchQuery, minPriceQuery, maxPriceQuery) => {
-    // Convert minPrice and maxPrice to numbers, handle empty strings
+  const handleSearch = (
+    searchQuery: string,
+    minPriceQuery: string,
+    maxPriceQuery: string
+  ) => {
     const minPriceNum = minPriceQuery ? parseFloat(minPriceQuery) : 0;
     const maxPriceNum = maxPriceQuery ? parseFloat(maxPriceQuery) : Infinity;
 
@@ -28,12 +39,11 @@ function FilterForm({ products }) {
     });
 
     console.log(filteredProducts);
-    // Update the 'products' query with the filtered data
     queryClient.setQueryData(['products'], filteredProducts);
     router.refresh();
   };
 
-  const onChangeHandler = (e) => {
+  const onChangeHandler = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     if (name === 'search') {
       setSearch(value);
@@ -47,8 +57,8 @@ function FilterForm({ products }) {
     }
   };
 
-  const handleSubmit = (e) => {
-    e.preventDefault(); // Prevent default form submission
+  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
   };
 
   return (
