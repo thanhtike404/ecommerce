@@ -5,8 +5,8 @@ export type Category = {
   id: string;
   name: string;
   imageUrl: string;
-  createdAt: string;
-  updatedAt: string;
+  createdAt?: string;
+  updatedAt?: string;
 };
 
 const useCategoryStore = create((set) => ({
