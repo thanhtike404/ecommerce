@@ -9,6 +9,14 @@ import axios from 'axios';
 import { Input } from '@/components/ui/input';
 import { Label } from '@radix-ui/react-label';
 import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
+
+import {
   Pagination,
   PaginationContent,
   PaginationEllipsis,
@@ -119,7 +127,7 @@ export default function Dashboard() {
                 {isLoading ? (
                   <h1>Loading ...</h1>
                 ) : (
-                  data?.products.map((product: any) => (
+                  data?.products?.map((product: any) => (
                     <div
                       key={product.id}
                       className="relative bg-white rounded-lg shadow-lg overflow-hidden group"

@@ -11,7 +11,7 @@ import React from 'react';
 import useCartStore from '@/store/home/cartStore';
 import { Product } from '@/store/home/cartStore';
 import { AiOutlineShoppingCart } from 'react-icons/ai';
-
+import CartItem from './cartItem';
 function CartSlider() {
   const cart = useCartStore((state) => state.cart);
   const itemCount = cart.reduce(
@@ -43,31 +43,36 @@ function CartSlider() {
             <div className="text-center text-gray-500">Your cart is empty.</div>
           ) : (
             <div>
-              {cart.map((product: Product) => (
-                <div
-                  key={product.id}
-                  className="flex items-center gap-4 my-4 p-4 border-b border-gray-200"
-                >
-                  <img
-                    src={product.imageUrl}
-                    alt={product.name}
-                    className="w-12 h-12 object-cover rounded"
-                  />
-                  <div className="flex-1">
-                    <h5 className="text-sm font-medium text-gray-800">
-                      {product.name}
-                    </h5>
-                    <p className="text-xs text-gray-500">
-                      {product.description}
-                    </p>
-                    <p className="text-xs text-gray-500">
-                      Quantity: {product.quantity}
-                    </p>
-                  </div>
-                  <div className="text-sm font-semibold text-gray-800">
-                    {/* ${product.price.toFixed(2)} */}
-                  </div>
-                </div>
+              {cart.map((item: any) => (
+                <CartItem
+                  key={item.id}
+                  cartId={item.stockId}
+                  quantity={item.quantity}
+                />
+                // <div
+                //   key={product.id}
+                //   className="flex items-center gap-4 my-4 p-4 border-b border-gray-200"
+                // >
+                //   <img
+                //     src={product.imageUrl}
+                //     alt={product.name}
+                //     className="w-12 h-12 object-cover rounded"
+                //   />
+                //   <div className="flex-1">
+                //     <h5 className="text-sm font-medium text-gray-800">
+                //       {product.name}
+                //     </h5>
+                //     <p className="text-xs text-gray-500">
+                //       {product.description}
+                //     </p>
+                //     <p className="text-xs text-gray-500">
+                //       Quantity: {product.quantity}
+                //     </p>
+                //   </div>
+                //   <div className="text-sm font-semibold text-gray-800">
+                //     {/* ${product.price.toFixed(2)} */}
+                //   </div>
+                // </div>
               ))}
             </div>
           )}

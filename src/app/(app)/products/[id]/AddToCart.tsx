@@ -1,30 +1,81 @@
 'use client';
-import React from 'react';
+import React, { useState, ChangeEvent } from 'react';
 import useCartStore, { Product } from '@/store/home/cartStore';
+import PriceAdjuster from './priceAdjuster';
 
 function AddToCart({ product }: { product: Product }) {
   const addToCart = useCartStore((state) => state.addToCart); // Get the addToCart function
 
+  const [selectedItem, setSelectedItem] = useState(
+    product.stock ? product.stock[0] : null
+  );
+  const [quantity, setQuantity] = useState(1);
+
   const handleAddToCart = () => {
-    console.log(product);
-    addToCart({
-      id: product.id,
-      name: product.name,
-      imageUrl: product.imageUrl,
-      createdAt: new Date().toISOString(),
-    });
+    if (selectedItem) {
+      addToCart({
+        stockId: selectedItem.id,
+        quantity: quantity,
+      });
+    }
+    console.log(selectedItem, 'selected item');
+    console.log(quantity, 'selected quantity');
+  };
+
+  const stockHandler = (e: ChangeEvent<HTMLSelectElement>) => {
+    const selectedItem = product.stock?.find(
+      (item) => item.id === parseInt(e.target.value, 10)
+    );
+    setSelectedItem(selectedItem || null);
+    if (selectedItem) {
+      setQuantity(1); // Reset quantity to 1 when a new size is selected
+    }
+  };
+
+  const handleQuantityChange = (newQuantity: number) => {
+    setQuantity(newQuantity);
   };
 
   return (
-    <div>
-      <div className="mb-4 flex w-full items-center gap-3 md:w-1/2">
+    <div className="p-4 rounded-lg bg-white">
+      {product.stock && (
+        <select
+          name="size"
+          id="size"
+          className="py-2 px-3 w-full rounded-md mb-3 bg-white border focus:outline-none focus:ring-2 focus:ring-blue-500"
+          onChange={stockHandler}
+        >
+          {product.stock.map((item) => (
+            <option key={item.id} value={item.id}>
+              {item.size}
+            </option>
+          ))}
+        </select>
+      )}
+      <div className="mb-4">
+        <h2 className="text-xl font-semibold">
+          {selectedItem?.price ? `$${selectedItem?.price}` : 'Select Size'}
+        </h2>
+        {selectedItem && (
+          <PriceAdjuster
+            initialQuantity={quantity}
+            maxStock={selectedItem.stock}
+            onQuantityChange={handleQuantityChange}
+          />
+        )}
+        <h2 className="text-gray-600">
+          {selectedItem?.stock ? `${selectedItem.stock} in stock` : 'Stock'}
+        </h2>
+      </div>
+      <div className="flex items-center gap-3">
         <button
-          className="bg-gray-200 text-gray-800 py-3 px-6 rounded-lg hover:bg-gray-300 transition duration-300 ease-in-out"
+          className="bg-blue-500 text-white py-2 px-4 rounded-lg hover:bg-blue-600 transition duration-300 ease-in-out w-full"
           onClick={handleAddToCart}
+          disabled={!selectedItem}
         >
           Add to Cart
         </button>
-        <button className="bg-transparent text-gray-800 py-3 px-6 rounded-lg border border-gray-300 hover:bg-gray-100 transition duration-300 ease-in-out">
+        <button className="bg-transparent text-gray-800 py-2 px-4 rounded-lg border border-gray-300 hover:bg-gray-100 transition duration-300 ease-in-out flex items-center justify-center">
           <svg
             xmlns="http://www.w3.org/2000/svg"
             className="h-6 w-6"

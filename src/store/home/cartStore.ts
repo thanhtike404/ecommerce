@@ -8,12 +8,34 @@ export type Product = {
   imageUrl: string;
   quantity: number;
   createdAt: string | Date;
+  price?: number;
+  stock?: [
+    {
+      id: number;
+      size: string;
+      price: number;
+      stock: number;
+      sku: string;
+    }
+  ];
+};
+
+type CartType = {
+  stockId: number;
+  quantity: number;
 };
 
 interface CartState {
-  cart: Product[];
+  cart: CartType[];
   addToCart: (product: Product) => void;
   clearCart: () => void;
+}
+export interface Stock {
+  id: number;
+  size: string;
+  price: number;
+  stock: number;
+  sku: string;
 }
 
 // Define the type for the persisted state
@@ -31,14 +53,19 @@ const useCartStore = create<CartState>(
       addToCart: (product) =>
         set((state) => {
           const existingProduct = state.cart.find(
-            (cartProduct) => cartProduct.id === product.id
+            (cartProduct) => cartProduct?.stockId === product.stockId
           );
+          console.log(state, 'from  store state');
 
+          console.log(product, 'from store');
           if (existingProduct) {
             return {
               cart: state.cart.map((cartProduct) =>
-                cartProduct.id === product.id
-                  ? { ...cartProduct, quantity: cartProduct.quantity + 1 }
+                cartProduct.stockId === product.stockId
+                  ? {
+                      ...cartProduct,
+                      quantity: cartProduct.quantity + product.quantity,
+                    }
                   : cartProduct
               ),
             };
@@ -49,6 +76,7 @@ const useCartStore = create<CartState>(
                 {
                   ...product,
                   quantity: 1,
+                  stockId: product?.stockId,
                   createdAt: new Date(),
                 },
               ],

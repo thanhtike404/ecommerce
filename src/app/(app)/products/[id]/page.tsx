@@ -5,7 +5,7 @@ function page({ params }: { params: { id: string } }) {
   console.log(id);
 
   return (
-    <div className="grid w-[90%] mx-auto mt-24">
+    <div className="grid w-[90%] mx-auto mt-4">
       <ProductDetail id={id} />
     </div>
   );
