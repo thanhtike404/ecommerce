@@ -2,11 +2,11 @@
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 
-import SignOutButton from '@/app/(app)/auth/signout/page';
 import { useSession } from 'next-auth/react';
 import CartSlider from '@/components/CartSlider';
 import useCartStore from '@/store/home/cartStore';
 
+import UserMenu from './userMenu';
 export default function Navigation() {
   const cart = useCartStore((state) => state?.cart || 0);
   const [navMenuOpen, setNavMenuOpen] = useState(false);
@@ -21,7 +21,7 @@ export default function Navigation() {
         setScrolling(false);
       }
     };
-
+    console.log(session);
     window.addEventListener('scroll', handleScroll);
 
     return () => {
@@ -38,6 +38,7 @@ export default function Navigation() {
       }${
         navMenuOpen ? ' h-screen bg-black/60 backdrop-blur-md text-white' : ''
       }`}
+      style={{ height: 'auto', minHeight: '60px' }} // Ensure a fixed height
     >
       <Link
         href={'/'}
@@ -55,10 +56,11 @@ export default function Navigation() {
       >
         <Link href={'/products'}>Products</Link>
 
-        {session ? <SignOutButton /> : <Link href={'/auth/signin'}>Login</Link>}
+        {session ? '' : <Link href={'/auth/signin'}>Login</Link>}
         <div className="flex">
           <CartSlider />
         </div>
+        {session && <UserMenu user={session.user} />}
       </div>
     </nav>
   );
