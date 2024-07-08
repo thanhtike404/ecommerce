@@ -46,40 +46,16 @@ function CartSlider() {
               {cart.map((item: any) => (
                 <CartItem
                   key={item.id}
-                  cartId={item.stockId}
+                  stockId={item.stockId}
                   quantity={item.quantity}
                 />
-                // <div
-                //   key={product.id}
-                //   className="flex items-center gap-4 my-4 p-4 border-b border-gray-200"
-                // >
-                //   <img
-                //     src={product.imageUrl}
-                //     alt={product.name}
-                //     className="w-12 h-12 object-cover rounded"
-                //   />
-                //   <div className="flex-1">
-                //     <h5 className="text-sm font-medium text-gray-800">
-                //       {product.name}
-                //     </h5>
-                //     <p className="text-xs text-gray-500">
-                //       {product.description}
-                //     </p>
-                //     <p className="text-xs text-gray-500">
-                //       Quantity: {product.quantity}
-                //     </p>
-                //   </div>
-                //   <div className="text-sm font-semibold text-gray-800">
-                //     {/* ${product.price.toFixed(2)} */}
-                //   </div>
-                // </div>
               ))}
             </div>
           )}
         </div>
         {cart.length > 0 && (
           <div className="mt-4 flex justify-end">
-            <button className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 transition">
+            <button className="bg-gray-500 text-white px-4 w-full py-2 rounded  transition">
               Proceed to Checkout
             </button>
           </div>

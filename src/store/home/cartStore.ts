@@ -29,6 +29,7 @@ interface CartState {
   cart: CartType[];
   addToCart: (product: Product) => void;
   clearCart: () => void;
+  increment: (stockId: { stockId: Number }) => void;
 }
 export interface Stock {
   id: number;
@@ -83,6 +84,26 @@ const useCartStore = create<CartState>(
             };
           }
         }),
+
+      increment: (stockId: number) =>
+        set((state) => ({
+          cart: state.cart.map((cartProduct) =>
+            cartProduct.stockId === stockId
+              ? { ...cartProduct, quantity: cartProduct.quantity + 1 }
+              : cartProduct
+          ),
+        })),
+      decrement: (stockId: number) =>
+        set((state) => ({
+          cart: state.cart.map((cartProduct) =>
+            cartProduct.stockId === stockId
+              ? {
+                  ...cartProduct,
+                  quantity: Math.max(cartProduct.quantity - 1, 0), // Prevent negative quantities
+                }
+              : cartProduct
+          ),
+        })),
       clearCart: () => {
         set({ cart: [] });
       },
