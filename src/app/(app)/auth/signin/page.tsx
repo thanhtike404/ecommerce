@@ -98,11 +98,19 @@ export default function Page() {
               >
                 Login
               </Button>
-              <Button variant="outline" className="w-full">
-                Login with Google
-              </Button>
             </div>
           </form>
+          <Button
+            variant="outline"
+            className="w-full"
+            onClick={(e) => {
+              // e.preventDefault();
+              console.log('clicked');
+              signIn('google', { redirect: false });
+            }}
+          >
+            Login with Google
+          </Button>
           <div className="mt-4 text-center text-sm">
             Don&apos;t have an account?{' '}
             <Link href="#" className="underline">
