@@ -104,6 +104,12 @@ const useCartStore = create<CartState>(
               : cartProduct
           ),
         })),
+      removeItem: (stockId: number) =>
+        set((state) => ({
+          cart: state.cart.filter(
+            (cartProduct) => cartProduct.stockId !== stockId
+          ),
+        })),
       clearCart: () => {
         set({ cart: [] });
       },

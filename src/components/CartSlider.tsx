@@ -13,6 +13,7 @@ import React from 'react';
 import useCartStore from '@/store/home/cartStore';
 import { AiOutlineShoppingCart } from 'react-icons/ai';
 import CartItem from './cartItem';
+import Link from 'next/link';
 
 function CartSlider() {
   const cart = useCartStore((state) => state.cart);
@@ -75,8 +76,9 @@ function CartSlider() {
                 <Trash className="h-4 w-4 inline-block ml-2" />
               </button>
               <button className="bg-blue-500 text-white px-4 w-full py-2 rounded transition">
-                Proceed to Checkout
+                <Link href="/checkout">Proceed to Checkout</Link>
               </button>
+
               <br />
             </div>
           )}

@@ -1,10 +1,9 @@
 'use client';
 import React from 'react';
-import Image from 'next/image';
 import useCartStore from '@/store/home/cartStore';
 import { useQuery } from '@tanstack/react-query';
-import { it } from 'node:test';
 import Product from './Product';
+import TotalPrice from './totalPrice';
 
 const CartPage = () => {
   const cart = useCartStore((state) => state.cart);
@@ -23,38 +22,6 @@ const CartPage = () => {
           <div className="bg-white shadow-md rounded-lg p-6 mb-6">
             <h2 className="text-xl font-semibold mb-4">PRODUCT</h2>
             {cart?.map((item) => (
-              // <div
-              //   className="flex items-center justify-between border-b pb-4 mb-4"
-              //   key={item.stockId}
-              // >
-              //   {/* <div className="flex items-center space-x-4">
-              //     <Image
-              //       src="/path-to-image1.jpg"
-              //       alt="Product 1"
-              //       width={80}
-              //       height={80}
-              //       className="w-20 h-20 object-cover rounded-md"
-              //     />
-              //     <div>
-              //       <div className="font-medium">
-              //         Some name of item goes here nice
-              //       </div>
-              //       <div className="text-sm text-gray-500">
-              //         Size: XL, Color: blue, Brand: Gucci
-              //       </div>
-              //     </div>
-              //   </div>
-              //   <div className="flex items-center space-x-4">
-              //     <select className="border rounded px-3 py-2">
-              //       <option value="1">1</option>
-              //       <option value="2">2</option>
-              //       <option value="3">3</option>
-              //     </select>
-              //     <div className="font-medium">$1156.00</div>
-              //     <button className="text-red-500">Remove</button>
-              //   </div> */}
-
-              // </div>
               <Product
                 quantity={item.quantity}
                 stockId={item.stockId}
@@ -75,7 +42,7 @@ const CartPage = () => {
           <div className="border-b pb-4 mb-4">
             <div className="flex justify-between">
               <span>Total price:</span>
-              <span>USD 568</span>
+              <TotalPrice />
             </div>
             <div className="flex justify-between">
               <span>Discount:</span>
