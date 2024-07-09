@@ -9,9 +9,9 @@ import {
 } from '@/components/ui/sheet';
 import React from 'react';
 import useCartStore from '@/store/home/cartStore';
-import { Product } from '@/store/home/cartStore';
 import { AiOutlineShoppingCart } from 'react-icons/ai';
 import CartItem from './cartItem';
+
 function CartSlider() {
   const cart = useCartStore((state) => state.cart);
   const itemCount = cart.reduce(
@@ -31,36 +31,41 @@ function CartSlider() {
           )}
         </div>
       </SheetTrigger>
-      <SheetContent>
-        <SheetHeader>
-          <SheetTitle className="text-lg font-bold">Your Cart</SheetTitle>
-          <SheetDescription className="text-sm text-gray-500">
-            Review your cart items. You can remove items or proceed to checkout.
-          </SheetDescription>
-        </SheetHeader>
-        <div className="mt-4">
-          {cart.length === 0 ? (
-            <div className="text-center text-gray-500">Your cart is empty.</div>
-          ) : (
-            <div>
-              {cart.map((item: any) => (
-                <CartItem
-                  key={item.id}
-                  stockId={item.stockId}
-                  quantity={item.quantity}
-                />
-              ))}
+      <div>
+        <SheetContent className="h-full overflow-y-auto">
+          <SheetHeader>
+            <SheetTitle className="text-lg font-bold">Your Cart</SheetTitle>
+            <SheetDescription className="text-sm text-gray-500">
+              Review your cart items. You can remove items or proceed to
+              checkout.
+            </SheetDescription>
+          </SheetHeader>
+          <div className="mt-4 overflow-y-auto">
+            {cart.length === 0 ? (
+              <div className="text-center text-gray-500">
+                Your cart is empty.
+              </div>
+            ) : (
+              <div>
+                {cart.map((item: any) => (
+                  <CartItem
+                    key={item.id}
+                    stockId={item.stockId}
+                    quantity={item.quantity}
+                  />
+                ))}
+              </div>
+            )}
+          </div>
+          {cart.length > 0 && (
+            <div className="mt-4 flex justify-end">
+              <button className="bg-gray-500 text-white px-4 w-full py-2 rounded transition">
+                Proceed to Checkout
+              </button>
             </div>
           )}
-        </div>
-        {cart.length > 0 && (
-          <div className="mt-4 flex justify-end">
-            <button className="bg-gray-500 text-white px-4 w-full py-2 rounded  transition">
-              Proceed to Checkout
-            </button>
-          </div>
-        )}
-      </SheetContent>
+        </SheetContent>
+      </div>
     </Sheet>
   );
 }
