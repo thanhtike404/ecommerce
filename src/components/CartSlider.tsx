@@ -7,6 +7,8 @@ import {
   SheetTitle,
   SheetTrigger,
 } from '@/components/ui/sheet';
+import { Trash } from 'lucide-react';
+
 import React from 'react';
 import useCartStore from '@/store/home/cartStore';
 import { AiOutlineShoppingCart } from 'react-icons/ai';
@@ -14,10 +16,16 @@ import CartItem from './cartItem';
 
 function CartSlider() {
   const cart = useCartStore((state) => state.cart);
+  const clearCart = useCartStore((state) => state.clearCart);
+
   const itemCount = cart.reduce(
     (total, product) => total + product.quantity,
     0
   );
+
+  const clearcartHandler = () => {
+    clearCart();
+  };
 
   return (
     <Sheet>
@@ -58,10 +66,18 @@ function CartSlider() {
             )}
           </div>
           {cart.length > 0 && (
-            <div className="mt-4 flex justify-end">
-              <button className="bg-gray-500 text-white px-4 w-full py-2 rounded transition">
+            <div className="mt-4 space-y-3 ">
+              <button
+                className="bg-red-500 text-white px-4 w-full py-2 rounded transition"
+                onClick={clearcartHandler}
+              >
+                Clear Cart
+                <Trash className="h-4 w-4 inline-block ml-2" />
+              </button>
+              <button className="bg-blue-500 text-white px-4 w-full py-2 rounded transition">
                 Proceed to Checkout
               </button>
+              <br />
             </div>
           )}
         </SheetContent>
