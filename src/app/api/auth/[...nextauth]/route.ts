@@ -44,21 +44,21 @@ const handler = NextAuth({
     signOut: '/auth/signout',
   },
 
-  // callbacks: {
-  //   // async jwt({ token, user }) {
-  //   //   // Initial sign in
-  //   //   if (user) {
-  //   //     token.email = user.email;
-  //   //      // Make sure your user model has a role field
-  //   //   }
-  //   //   return token;
-  //   // },
-  //   async session({ session, token }) {
-  //     // Add token values to session
-  //     session.user.email = token.email;
-  //     return session;
-  //   },
-  // },
+  callbacks: {
+    async jwt({ token, user }) {
+      // Initial sign in
+      if (user) {
+        token.email = user.email;
+        // Make sure your user model has a role field
+      }
+      return token;
+    },
+    async session({ session, token }) {
+      // Add token values to session
+      session?.user.email = token.email;
+      return session;
+    },
+  },
   session: {
     strategy: 'jwt',
   },
