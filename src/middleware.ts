@@ -1,4 +1,15 @@
-export { default } from 'next-auth/middleware';
+import { getToken } from 'next-auth/jwt';
+import { NextResponse } from 'next/server';
+
+export default async function middleware(req) {
+  const token = await getToken({ req, secret: process.env.NEXTAUTH_SECRET });
+
+  if (!token) {
+    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+  }
+
+  return NextResponse.next();
+}
 
 export const config = {
   matcher: ['/dashboard/:path*', '/orders', '/checkout'],
