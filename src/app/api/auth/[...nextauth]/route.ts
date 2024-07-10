@@ -44,14 +44,27 @@ const handler = NextAuth({
     signOut: '/auth/signout',
   },
   callbacks: {
-    authorized({ req, token }) {
-      if (token) return true; // If there is a token, the user is authenticated
+    async jwt({ token, user }) {
+      // Initial sign in
+      if (user) {
+        token.id = user.id;
+        // Make sure your user model has a role field
+      }
+      return token;
+    },
+    async session({ session, token }) {
+      // Add token values to session
+      session.user.id = token.id;
+
+      return session;
     },
   },
   session: {
     strategy: 'jwt',
   },
+
   async redirect({ url, baseUrl }: { url: string; baseUrl: string }) {
+    // Redirect to the homepage or any other page after sign-in
     return baseUrl; // Always return the base URL
   },
 });
