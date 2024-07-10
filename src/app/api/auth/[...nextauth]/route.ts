@@ -43,19 +43,9 @@ const handler = NextAuth({
     signIn: '/auth/signin',
     signOut: '/auth/signout',
   },
-
   callbacks: {
-    async jwt({ token, user }) {
-      // Initial sign in
-      if (user) {
-        token.email = user.email;
-      }
-      return token;
-    },
-    async session({ session, token }) {
-      // Add token values to session
-      session.user.email = token.email;
-      return session;
+    authorized({ req, token }) {
+      if (token) return true; // If there is a token, the user is authenticated
     },
   },
   session: {
