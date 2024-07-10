@@ -1,16 +1,14 @@
-import { getToken } from 'next-auth/jwt';
+import { withAuth } from 'next-auth/middleware';
 import { NextResponse } from 'next/server';
 
-export default async function middleware(req) {
-  const token = await getToken({ req, secret: process.env.NEXTAUTH_SECRET });
-
-  if (!token) {
-    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+export default withAuth(function middleware(req) {
+  if (!req.nextauth.token) {
+    const url = req.nextUrl.clone();
+    url.pathname = '/auth/signin';
+    return NextResponse.rewrite(url);
   }
-
   return NextResponse.next();
-}
-
+});
 export const config = {
   matcher: ['/dashboard/:path*', '/orders', '/checkout'],
 };
