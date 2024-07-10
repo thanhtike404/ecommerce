@@ -1,12 +1,11 @@
-import { ColumnDef } from '@tanstack/react-table';
+import { ColumnDef, FilterFn } from '@tanstack/react-table';
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
 import { ArrowUpDown, MoreHorizontal } from 'lucide-react';
 import Image from 'next/image';
-import { User } from './type';
+import { Order } from './type';
 import {
   DropdownMenu,
-  DropdownMenuCheckboxItem,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuLabel,
@@ -14,7 +13,15 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 
-export const columns: ColumnDef<User>[] = [
+const filterByProductName: FilterFn<Order> = (row, columnId, filterValue) => {
+  const orderItem = row.original.orderItems[0];
+  return (
+    orderItem?.productName?.toLowerCase().includes(filterValue.toLowerCase()) ??
+    false
+  );
+};
+
+export const columns: ColumnDef<Order>[] = [
   {
     id: 'select',
     header: ({ table }) => (
@@ -28,30 +35,32 @@ export const columns: ColumnDef<User>[] = [
       />
     ),
     cell: ({ row }) => (
-      <Checkbox
-        checked={row.getIsSelected()}
-        onCheckedChange={(value) => row.toggleSelected(!!value)}
-        aria-label="Select row"
-      />
+      <div className="text-center">
+        <Checkbox
+          checked={row.getIsSelected()}
+          onCheckedChange={(value) => row.toggleSelected(!!value)}
+          aria-label="Select row"
+        />
+      </div>
     ),
     enableSorting: false,
     enableHiding: false,
   },
   {
-    accessorKey: 'name',
+    accessorKey: 'id',
     header: ({ column }) => (
       <Button
         variant="ghost"
         onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
       >
-        Name
+        OrderId
         <ArrowUpDown className="ml-2 h-4 w-4" />
       </Button>
     ),
-    cell: ({ row }) => <div className="lowercase">{row.getValue('email')}</div>,
+    cell: ({ row }) => <div className="text-center">{row.getValue('id')}</div>,
   },
   {
-    accessorKey: 'image',
+    accessorKey: 'productImage', // Unique accessor key
     header: ({ column }) => (
       <Button
         variant="ghost"
@@ -61,76 +70,85 @@ export const columns: ColumnDef<User>[] = [
         <ArrowUpDown className="ml-2 h-4 w-4" />
       </Button>
     ),
-    cell: ({ row }) => (
-      <Image
-        className="ml-4"
-        src={
-          row.getValue('image') ??
-          'https://lh3.googleusercontent.com/a/ACg8ocIKcrZbD1DmQY_G4DCsve1RNQIYZAPojPXm0MrGVE1MAu2RiRBu=s96-c'
-        }
-        alt={row.getValue('name')}
-        height={30}
-        width={30}
-      />
-    ),
-  },
-  {
-    accessorKey: 'email',
-    header: ({ column }) => (
-      <Button
-        variant="ghost"
-        onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
-      >
-        Email
-        <ArrowUpDown className="ml-2 h-4 w-4" />
-      </Button>
-    ),
-    cell: ({ row }) => <div className="lowercase">{row.getValue('email')}</div>,
-  },
-  {
-    accessorKey: 'email_verified',
-    header: ({ column }) => (
-      <Button
-        variant="ghost"
-        onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
-      >
-        Verified Email
-        <ArrowUpDown className="ml-2 h-4 w-4" />
-      </Button>
-    ),
-    cell: ({ row }) => (
-      <div className="ml-4 h-4 w-4">
-        {row.getValue('email_verified') ? 'verified' : 'unverified'}
-      </div>
-    ),
-  },
-  {
-    id: 'actions',
-    enableHiding: false,
     cell: ({ row }) => {
-      const user = row.original;
-
+      const orderItem = row.original.orderItems[0];
       return (
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button variant="ghost" className="h-8 w-8 p-0">
-              <span className="sr-only">Open menu</span>
-              <MoreHorizontal className="h-4 w-4" />
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end">
-            <DropdownMenuLabel>Actions</DropdownMenuLabel>
-            <DropdownMenuItem
-              onClick={() => navigator.clipboard.writeText(user.id)}
-            >
-              Copy user ID
-            </DropdownMenuItem>
-            <DropdownMenuSeparator />
-            <DropdownMenuItem>View user</DropdownMenuItem>
-            <DropdownMenuItem>View user details</DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
+        <div className="text-center">
+          <Image
+            className="ml-4"
+            src={
+              orderItem?.productImage ??
+              'https://lh3.googleusercontent.com/a/ACg8ocIKcrZbD1DmQY_G4DCsve1RNQIYZAPojPXm0MrGVE1MAu2RiRBu=s96-c'
+            }
+            alt={orderItem?.productName}
+            height={30}
+            width={30}
+          />
+        </div>
       );
+    },
+  },
+  {
+    accessorKey: 'productName', // Unique accessor key
+    header: ({ column }) => (
+      <Button
+        variant="ghost"
+        onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
+      >
+        Product Name
+        <ArrowUpDown className="ml-2 h-4 w-4" />
+      </Button>
+    ),
+    cell: ({ row }) => {
+      const orderItem = row.original.orderItems[0];
+      return <div className="text-center">{orderItem?.productName}</div>;
+    },
+    filterFn: filterByProductName, // Use the custom filter function here
+  },
+  {
+    accessorKey: 'quantity', // Unique accessor key
+    header: ({ column }) => (
+      <Button
+        variant="ghost"
+        onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
+      >
+        Order Quantity
+        <ArrowUpDown className="ml-2 h-4 w-4" />
+      </Button>
+    ),
+    cell: ({ row }) => {
+      const orderItem = row.original.orderItems[0];
+      return <div className="text-center">{orderItem?.quantity}</div>;
+    },
+  },
+  {
+    accessorKey: 'totalAmount',
+    header: ({ column }) => (
+      <Button
+        variant="ghost"
+        onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
+      >
+        Total Price
+        <ArrowUpDown className="ml-2 h-4 w-4" />
+      </Button>
+    ),
+    cell: ({ row }) => (
+      <div className="text-center">{row.getValue('totalAmount')}</div>
+    ),
+  },
+  {
+    accessorKey: 'orderStatus', // Unique accessor key
+    header: ({ column }) => (
+      <Button
+        variant="ghost"
+        onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
+      >
+        Order Status
+        <ArrowUpDown className="ml-2 h-4 w-4" />
+      </Button>
+    ),
+    cell: ({ row }) => {
+      return <div className="text-center">{row.getValue('orderStatus')}</div>;
     },
   },
 ];

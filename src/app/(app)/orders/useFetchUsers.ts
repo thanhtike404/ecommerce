@@ -7,7 +7,7 @@ export const useFetchUsers = () => {
     queryKey: ['users'],
     queryFn: async () => {
       try {
-        const response = await axios.get('/api/v1/dashboard/users');
+        const response = await axios.get('/api/v1/order');
         return response.data;
       } catch (error) {
         console.error('Error fetching users:', error);

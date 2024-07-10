@@ -45,7 +45,7 @@ model User {
   image         String?
   accounts      Account[]
   sessions      Session[]
- 
+   orders    Order[]
   @@map("users")
 }
  
@@ -114,6 +114,45 @@ model Stock {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   product   Product  @relation(fields: [productId], references: [id])
-
+orderItems OrderItem[] 
   @@index([productId], map: "Stock_productId_fkey")
+}
+
+model Order {
+  id              Int      @id @default(autoincrement())
+  orderDate       DateTime
+  userId          String  @map("user_id")
+  totalAmount     Float
+  paymentStatus   String
+  paymentMethod   String?
+  orderStatus     String?
+  shippingAddress String?
+  billingAddress  String?
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  orderItems      OrderItem[]
+
+  user            User     @relation(fields: [userId], references: [id])
+  @@index([userId], map: "Order_userId_fkey")
+}
+
+
+
+
+model OrderItem {
+  id          Int      @id @default(autoincrement())
+  orderId     Int
+  stockId     Int
+  quantity    Int
+  unitPrice   Float
+  totalPrice  Float
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  order       Order    @relation(fields: [orderId], references: [id])
+  stock       Stock    @relation(fields: [stockId], references: [id])
+
+  @@index([orderId], map: "OrderItem_orderId_fkey")
+  @@index([stockId], map: "OrderItem_stockId_fkey")
 }

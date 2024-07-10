@@ -55,6 +55,7 @@ export default function Navigation() {
         }`}
       >
         <Link href={'/products'}>Products</Link>
+        <Link href={'/checkout'}>Checkout</Link>
 
         <Link href={'/orders'}>Orders</Link>
         {session ? '' : <Link href={'/auth/signin'}>Login</Link>}

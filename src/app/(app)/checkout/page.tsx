@@ -1,18 +1,40 @@
 'use client';
 import React from 'react';
 import useCartStore from '@/store/home/cartStore';
-import { useQuery } from '@tanstack/react-query';
+import { useMutation } from '@tanstack/react-query';
 import Product from './Product';
+import { useSession } from 'next-auth/react';
 import TotalPrice from './totalPrice';
+import axios from 'axios';
 
 const CartPage = () => {
   const cart = useCartStore((state) => state.cart);
+  const { data: session } = useSession();
+
+  const orderMutation = useMutation({
+    mutationKey: ['order'],
+    mutationFn: async (item) => {
+      const response = await axios.post('/api/v1/order', item);
+      console.log(response.data);
+      return response.data;
+    },
+  });
+
+  const orderHandler = () => {
+    try {
+      cart.forEach((item) => {
+        item.email = session?.user?.email;
+        orderMutation.mutate(item);
+      });
+      alert('Order placed successfully');
+    } catch (error) {
+      alert('error ordering: ', error.message);
+    }
+  };
 
   if (cart.length === 0) {
     return <div>Your cart is empty.</div>;
   }
-
-  console.log(cart, 'cart');
 
   return (
     <div className="container mx-auto mt-24 p-4">
@@ -75,7 +97,10 @@ const CartPage = () => {
           </div>
 
           <div className="text-center">
-            <button className="bg-blue-500 text-white px-4 py-2 w-full rounded transition hover:bg-blue-600">
+            <button
+              className="bg-blue-500 text-white px-4 py-2 w-full rounded transition hover:bg-blue-600"
+              onClick={orderHandler}
+            >
               Make Purchase
             </button>
           </div>
