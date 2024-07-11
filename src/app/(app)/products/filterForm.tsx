@@ -38,7 +38,6 @@ function FilterForm({ products }: FilterFormProps) {
       );
     });
 
-    console.log(filteredProducts);
     queryClient.setQueryData(['products'], filteredProducts);
     router.refresh();
   };

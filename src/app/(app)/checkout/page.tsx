@@ -17,7 +17,7 @@ const CartPage = () => {
     mutationKey: ['order'],
     mutationFn: async (item) => {
       const response = await axios.post('/api/v1/order', item);
-      console.log(response.data);
+
       return response.data;
     },
   });

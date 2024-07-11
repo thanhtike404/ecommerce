@@ -18,8 +18,6 @@ function AddToCart({ product }: { product: Product }) {
         quantity: quantity,
       });
     }
-    console.log(selectedItem, 'selected item');
-    console.log(quantity, 'selected quantity');
   };
 
   const stockHandler = (e: ChangeEvent<HTMLSelectElement>) => {

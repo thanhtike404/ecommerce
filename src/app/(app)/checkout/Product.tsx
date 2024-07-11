@@ -15,7 +15,7 @@ function Product({ stockId, quantity }: { stockId: number; quantity: number }) {
       return product;
     },
   });
-  console.log(data);
+
   return (
     <div>
       {data && (

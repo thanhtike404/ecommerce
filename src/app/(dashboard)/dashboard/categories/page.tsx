@@ -5,7 +5,7 @@ import CategoryForm from './CategoryForm';
 
 async function page() {
   const categories = await prismaClient.category.findMany();
-  console.log(categories);
+
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 gap-8 w-full p-4">
       <div className="flex justify-center w-full">

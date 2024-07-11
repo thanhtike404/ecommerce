@@ -72,7 +72,6 @@ export const PUT = async (
       }
 
       try {
-        console.log(categoryIcon, 'categoryIcon');
         const fileExtension =
           categoryIcon instanceof File
             ? categoryIcon.name.split('.').pop()

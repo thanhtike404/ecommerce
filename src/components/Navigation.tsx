@@ -21,7 +21,7 @@ export default function Navigation() {
         setScrolling(false);
       }
     };
-    console.log(session);
+
     window.addEventListener('scroll', handleScroll);
 
     return () => {

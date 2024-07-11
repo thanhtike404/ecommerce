@@ -134,7 +134,7 @@ export default function page() {
       return data;
     },
   });
-  console.log(data);
+
   const table = useReactTable({
     data: data || [],
     columns,

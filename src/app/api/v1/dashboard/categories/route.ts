@@ -7,7 +7,7 @@ export const POST = async (request: NextRequest) => {
 
     const formDataObj = Object.fromEntries(formData.entries());
     const { categoryName, categoryIcon } = formDataObj;
-    console.log(categoryName, 'category name');
+
     const fileExtension =
       categoryIcon instanceof File
         ? categoryIcon.name.split('.').pop()

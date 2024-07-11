@@ -50,8 +50,6 @@ export const GET = async (req: NextRequest) => {
       },
     });
 
-    console.log('Fetched Products:', fetchProducts);
-
     const products = fetchProducts.map((product) => {
       return {
         id: product.id,

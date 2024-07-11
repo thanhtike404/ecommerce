@@ -6,38 +6,38 @@ import prismaClient from '@/lib/db';
 
 const authOptions: NextAuthOptions = {
   secret: process.env.NEXTAUTH_SECRET as string,
-  adapter: PrismaAdapter(prismaClient),
+  adapter: PrismaAdapter(prismaClient) as any,
   providers: [
     GoogleProvider({
       clientId: process.env.GOOGLE_CLIENT_ID as string,
       clientSecret: process.env.GOOGLE_CLIENT_SECRET as string,
     }),
-    CredentialsProvider({
-      name: 'Credentials',
-      credentials: {
-        email: { label: 'Email', type: 'text', placeholder: 'jsmith' },
-        password: { label: 'Password', type: 'password' },
-      },
-      async authorize(credentials) {
-        if (!credentials) {
-          throw new Error('No credentials provided');
-        }
-        const { email, password } = credentials;
+    // CredentialsProvider({
+    //   name: 'Credentials',
+    //   credentials: {
+    //     email: { label: 'Email', type: 'text', placeholder: 'jsmith' },
+    //     password: { label: 'Password', type: 'password' },
+    //   },
+    //   async authorize(credentials) {
+    //     if (!credentials) {
+    //       throw new Error('No credentials provided');
+    //     }
+    //     const { email, password } = credentials;
 
-        console.log(credentials);
+    //     console.log(credentials);
 
-        try {
-          if (email === 'admin@gmail.com' && password === '123') {
-            return { email };
-          } else {
-            throw new Error('Invalid credentials');
-          }
-        } catch (error) {
-          console.error('Error during authorization:', error);
-          throw new Error('Invalid credentials');
-        }
-      },
-    }),
+    //     try {
+    //       if (email === 'admin@gmail.com' && password === '123') {
+    //         return { email };
+    //       } else {
+    //         throw new Error('Invalid credentials');
+    //       }
+    //     } catch (error) {
+    //       console.error('Error during authorization:', error);
+    //       throw new Error('Invalid credentials');
+    //     }
+    //   },
+    // }),
   ],
   callbacks: {
     session({ session, token, user }) {

@@ -105,7 +105,7 @@ export default function Page() {
             className="w-full"
             onClick={(e) => {
               // e.preventDefault();
-              console.log('clicked');
+
               signIn('google', { redirect: false });
             }}
           >

@@ -56,9 +56,7 @@ const useCartStore = create<CartState>(
           const existingProduct = state.cart.find(
             (cartProduct) => cartProduct?.stockId === product.stockId
           );
-          console.log(state, 'from  store state');
 
-          console.log(product, 'from store');
           if (existingProduct) {
             return {
               cart: state.cart.map((cartProduct) =>

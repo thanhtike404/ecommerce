@@ -68,8 +68,6 @@ export default function Dashboard() {
     setPage(1);
   };
 
-  console.log(data);
-
   return (
     <div className="grid w-[90%] mx-auto mt-24">
       <TooltipProvider>
