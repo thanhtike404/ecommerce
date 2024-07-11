@@ -1,5 +1,5 @@
 'use client';
-import React from 'react';
+import React, { useEffect } from 'react';
 import useCartStore from '@/store/home/cartStore';
 import { useMutation } from '@tanstack/react-query';
 import Product from './Product';
@@ -10,7 +10,9 @@ import axios from 'axios';
 const CartPage = () => {
   const cart = useCartStore((state) => state.cart);
   const { data: session } = useSession();
-
+  useEffect(() => {
+    if (!session) return;
+  }, []);
   const orderMutation = useMutation({
     mutationKey: ['order'],
     mutationFn: async (item) => {

@@ -1,11 +1,12 @@
+import { NextAuthOptions } from 'next-auth';
 import CredentialsProvider from 'next-auth/providers/credentials';
 import GoogleProvider from 'next-auth/providers/google';
 import { PrismaAdapter } from '@auth/prisma-adapter';
 import prismaClient from '@/lib/db';
 
-export const authOptions = {
+const authOptions: NextAuthOptions = {
   secret: process.env.NEXTAUTH_SECRET as string,
-  adapter: PrismaAdapter(prismaClient) as any,
+  adapter: PrismaAdapter(prismaClient),
   providers: [
     GoogleProvider({
       clientId: process.env.GOOGLE_CLIENT_ID as string,
@@ -13,35 +14,34 @@ export const authOptions = {
     }),
     CredentialsProvider({
       name: 'Credentials',
-
       credentials: {
-        email: { label: 'Username', type: 'text', placeholder: 'jsmith' },
+        email: { label: 'Email', type: 'text', placeholder: 'jsmith' },
         password: { label: 'Password', type: 'password' },
       },
-      async authorize(credentials, req): Promise<any> {
+      async authorize(credentials) {
+        if (!credentials) {
+          throw new Error('No credentials provided');
+        }
+        const { email, password } = credentials;
+
         console.log(credentials);
 
         try {
-          if (
-            credentials?.email == 'admin@gmail.com' &&
-            credentials?.password == '123'
-          ) {
-            // Any object returned will be saved in `user` property of the JWT
-
-            // const isValid = await compare(credentials?.password, user.password);
-
-            return credentials;
+          if (email === 'admin@gmail.com' && password === '123') {
+            return { email };
+          } else {
+            throw new Error('Invalid credentials');
           }
-          return Promise.reject(new Error('Invalid credentials'));
         } catch (error) {
-          return Promise.reject(new Error('Invalid credentials'));
+          console.error('Error during authorization:', error);
+          throw new Error('Invalid credentials');
         }
       },
     }),
   ],
   callbacks: {
-    session({ session, token, user }: { session: any; token: any; user: any }) {
-      return session; // The return type will match the one returned in `useSession()`
+    session({ session, token, user }) {
+      return session;
     },
   },
   pages: {
@@ -52,3 +52,5 @@ export const authOptions = {
     strategy: 'jwt',
   },
 };
+
+export default authOptions;
