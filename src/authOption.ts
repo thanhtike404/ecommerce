@@ -6,7 +6,7 @@ import prismaClient from '@/lib/db';
 import * as Sentry from '@sentry/nextjs';
 
 const authOptions: NextAuthOptions = {
-  secret: process.env.NEXTAUTH_SECRET as string,
+  secret: process.env.NEXTAUTH_URL as string,
   adapter: PrismaAdapter(prismaClient) as any,
   providers: [
     GoogleProvider({

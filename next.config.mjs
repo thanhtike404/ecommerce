@@ -5,9 +5,9 @@ const nextConfig = {
     ignoreBuildErrors: true,
   },
   i18n: {
-    locales: ['en', 'fr', 'de'], // Add your supported locales here
-    defaultLocale: 'en',
-    localeDetection: false,
+    locales: ['en', 'th'], // Add English and Thai as supported locales
+    defaultLocale: 'en', // Set the default locale to English or Thai as needed
+    localeDetection: false, // Disable automatic locale detection
   },
   images: {
     remotePatterns: [
