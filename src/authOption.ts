@@ -6,50 +6,41 @@ import prismaClient from '@/lib/db';
 import * as Sentry from '@sentry/nextjs';
 
 const authOptions: NextAuthOptions = {
-  secret: process.env.NEXTAUTH_URL as string,
   adapter: PrismaAdapter(prismaClient) as any,
   providers: [
     GoogleProvider({
       clientId: process.env.GOOGLE_CLIENT_ID as string,
       clientSecret: process.env.GOOGLE_CLIENT_SECRET as string,
     }),
-    CredentialsProvider({
-      name: 'Credentials',
-      credentials: {
-        email: { label: 'Email', type: 'text', placeholder: 'jsmith' },
-        password: { label: 'Password', type: 'password' },
-      },
-      async authorize(credentials) {
-        if (!credentials) {
-          Sentry.captureException(new Error('No credentials provided'));
-          throw new Error('No credentials provided');
-        }
-        const { email, password } = credentials;
 
-        try {
-          if (email === 'admin@gmail.com' && password === '123') {
-            return { email };
-          } else {
-            throw new Error('Invalid credentials');
-          }
-        } catch (error) {
-          Sentry.captureException(error);
-          throw new Error('Invalid credentials');
-        }
-      },
-    }),
+    // ...add more providers here
   ],
+  pages: {
+    signIn: '/auth/signin',
+  },
   callbacks: {
-    session({ session, token, user }) {
+    async jwt({ token, user }) {
+      // Initial sign in
+      if (user) {
+        token.id = user.id;
+        // Make sure your user model has a role field
+      }
+      return token;
+    },
+    async session({ session, token }) {
+      // Add token values to session
+      session.user.id = token.id;
+
       return session;
     },
   },
-  pages: {
-    signIn: '/auth/signin',
-    signOut: '/auth/signout',
-  },
   session: {
     strategy: 'jwt',
+  },
+
+  async redirect({ url, baseUrl }: { url: string; baseUrl: string }) {
+    // Redirect to the homepage or any other page after sign-in
+    return baseUrl; // Always return the base URL
   },
 };
 
