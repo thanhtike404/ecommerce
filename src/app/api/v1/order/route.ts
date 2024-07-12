@@ -1,9 +1,18 @@
 import prismaClient from '@/lib/db';
 import { NextRequest, NextResponse } from 'next/server';
-export const GET = async (request: Request) => {
+
+import { revalidateTag } from 'next/cache';
+export const GET = async (request: NextRequest) => {
+  const email = request.nextUrl.searchParams.get('email') as string;
+
+  const user = await prismaClient.user.findUnique({
+    where: {
+      email,
+    },
+  });
   const orders = await prismaClient.order.findMany({
     where: {
-      userId: 'clyd8i64z00004kamj7t015jw',
+      userId: user?.id,
       orderItems: {
         some: {},
       },
@@ -37,7 +46,6 @@ export const GET = async (request: Request) => {
       price: item.stock.price,
     })),
   }));
-
   return Response.json(data);
 };
 
@@ -109,8 +117,8 @@ export const POST = async (request: Request) => {
     }
 
     // Replace this with your actual logic to generate or fetch invoice ID
-
+    revalidateTag('orders');
     // Example response including the email and invoiceId
-    return new Response(JSON.stringify({ user, stock, data }));
+    return new Response(JSON.stringify({ user, stock, data, email }));
   } catch (error) {}
 };
