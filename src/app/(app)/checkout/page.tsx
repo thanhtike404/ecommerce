@@ -11,7 +11,7 @@ const CartPage = () => {
   const cart = useCartStore((state) => state.cart);
   const { data: session } = useSession();
   useEffect(() => {
-    if (!session) return;
+    // if (!session) return;
   }, []);
   const orderMutation = useMutation({
     mutationKey: ['order'],
