@@ -24,7 +24,7 @@ export const GET = async (request: NextRequest) => {
 export const POST = async (request: NextRequest) => {
   try {
     const body = await request.formData();
-    console.log(body);
+
     return NextResponse.json(body);
   } catch (error) {
     return NextResponse.json(error);

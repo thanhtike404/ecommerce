@@ -30,7 +30,9 @@ export const columns: ColumnDef<Order>[] = [
           table.getIsAllPageRowsSelected() ||
           (table.getIsSomePageRowsSelected() && 'indeterminate')
         }
-        onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
+        onCheckedChange={(value) =>
+          console.log(table.toggleAllPageRowsSelected(!!value))
+        }
         aria-label="Select all"
       />
     ),
@@ -59,6 +61,41 @@ export const columns: ColumnDef<Order>[] = [
     ),
     cell: ({ row }) => <div className="text-center">{row.getValue('id')}</div>,
   },
+  {
+    accessorKey: 'email',
+    header: ({ column }) => (
+      <Button
+        variant="ghost"
+        onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
+      >
+        Email
+        <ArrowUpDown className="ml-2 h-4 w-4" />
+      </Button>
+    ),
+    cell: ({ row }) => <h3 className="text-center">{row.getValue('email')}</h3>,
+  },
+  {
+    accessorKey: 'userImage',
+    header: ({ column }) => (
+      <Button
+        variant="ghost"
+        onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
+      >
+        Image
+        <ArrowUpDown className="ml-2 h-4 w-4" />
+      </Button>
+    ),
+    cell: ({ row }) => (
+      <Image
+        alt={row.getValue('email')}
+        height={30}
+        width={30}
+        className="mx-auto rounded-lg"
+        src={row.getValue('userImage')}
+      />
+    ),
+  },
+
   {
     accessorKey: 'productImage', // Unique accessor key
     header: ({ column }) => (
@@ -119,6 +156,22 @@ export const columns: ColumnDef<Order>[] = [
     cell: ({ row }) => {
       const orderItem = row.original.orderItems[0];
       return <div className="text-center">{orderItem?.quantity}</div>;
+    },
+  },
+  {
+    accessorKey: 'price', // Unique accessor key
+    header: ({ column }) => (
+      <Button
+        variant="ghost"
+        onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
+      >
+        Price
+        <ArrowUpDown className="ml-2 h-4 w-4" />
+      </Button>
+    ),
+    cell: ({ row }) => {
+      const orderItem = row.original.orderItems[0];
+      return <div className="text-center">{orderItem?.price}</div>;
     },
   },
   {

@@ -15,17 +15,11 @@ export const GET = async (req: NextRequest) => {
     const pageSize = 10;
     const skip = (page - 1) * pageSize;
 
-    console.log('Search:', search);
-    console.log('Min Price:', minPrice);
-    console.log('Max Price:', maxPrice);
-
     // Create price filter
     const priceFilter: any = { gte: minPrice };
     if (maxPrice !== Infinity) {
       priceFilter.lte = maxPrice;
     }
-
-    console.log('Price Filter:', priceFilter);
 
     const fetchProducts = await prismaClient.product.findMany({
       where: {

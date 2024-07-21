@@ -45,7 +45,8 @@ model User {
   image         String?
   accounts      Account[]
   sessions      Session[]
-   orders    Order[]
+  orders        Order[]
+  role          Role      @default(USER)
   @@map("users")
 }
  
@@ -155,4 +156,9 @@ model OrderItem {
 
   @@index([orderId], map: "OrderItem_orderId_fkey")
   @@index([stockId], map: "OrderItem_stockId_fkey")
+}
+
+enum Role {
+  USER
+  ADMIN
 }

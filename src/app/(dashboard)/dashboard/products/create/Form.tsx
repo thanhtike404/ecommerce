@@ -66,11 +66,9 @@ export default function ProductForm() {
       formData.append('images', file);
     });
 
-    console.log(data.variants);
     try {
       const response = await createProduct(formData);
-      console.log('response:', response);
-      console.log('response:', response.stock[1]);
+
       if (response.success) {
         router.push('/dashboard/products');
       }

@@ -46,6 +46,8 @@ export const GET = async (request: NextRequest) => {
       price: item.stock.price,
     })),
   }));
+  revalidateTag(`orders-${email}`);
+
   return Response.json(data);
 };
 
@@ -117,7 +119,6 @@ export const POST = async (request: Request) => {
     }
 
     // Replace this with your actual logic to generate or fetch invoice ID
-    revalidateTag('orders');
     // Example response including the email and invoiceId
     return new Response(JSON.stringify({ user, stock, data, email }));
   } catch (error) {}

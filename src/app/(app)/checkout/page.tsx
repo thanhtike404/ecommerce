@@ -9,9 +9,11 @@ import axios from 'axios';
 
 const CartPage = () => {
   const cart = useCartStore((state) => state.cart);
+  const clearCart = useCartStore((state) => state.clearCart);
+
   const { data: session } = useSession();
   useEffect(() => {
-    // if (!session) return;
+    if (!session) return;
   }, []);
   const orderMutation = useMutation({
     mutationKey: ['order'],
@@ -19,6 +21,9 @@ const CartPage = () => {
       const response = await axios.post('/api/v1/order', item);
 
       return response.data;
+    },
+    onSuccess(data, variables, context) {
+      clearCart();
     },
   });
 
@@ -29,6 +34,7 @@ const CartPage = () => {
         orderMutation.mutate(item);
       });
       alert('Order placed successfully');
+      clearCart();
     } catch (error) {
       alert('error ordering: ', error.message);
     }
