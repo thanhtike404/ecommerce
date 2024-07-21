@@ -29,13 +29,15 @@ import {
   TableRow,
 } from '@/components/ui/table';
 import { columns } from './columns';
-import { useFetchOrders } from './useFetchOrders';
+import { useFetchOrders, useDeleteIdsMutation } from './useFetchOrders';
 import { ChevronDown } from 'lucide-react';
 // import { Spinner } from '@/components/ui/spinner'; // Assuming you have a Spinner component
 
 export default function DataTable() {
-  const { data, isLoading } = useFetchOrders();
+  const deleteMutation = useDeleteIdsMutation([]);
+  const { data, isLoading, refetch } = useFetchOrders(); // Add refetch here
   const [sorting, setSorting] = React.useState<SortingState>([]);
+  const [selectedIds, setSelectedIds] = React.useState<number[]>([]);
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
     []
   );
@@ -62,9 +64,30 @@ export default function DataTable() {
     },
   });
 
+  React.useEffect(() => {
+    const selectIds = table
+      .getSelectedRowModel()
+      .rows.map((row) => row.original.id);
+    setSelectedIds(selectIds);
+  }, [table.getSelectedRowModel()]);
+
   return (
     <div className="w-full">
       <div className="flex items-center py-4">
+        {selectedIds.length !== 0 && (
+          <Button
+            variant="destructive"
+            onClick={() => {
+              deleteMutation.mutate(selectedIds, {
+                onSuccess: () => {
+                  refetch(); // Refetch the data after successful deletion
+                },
+              });
+            }}
+          >
+            Delete
+          </Button>
+        )}
         <Input
           placeholder="Filter product names..."
           value={
@@ -105,10 +128,7 @@ export default function DataTable() {
       </div>
       <div className="rounded-md border" role="region" aria-busy={isLoading}>
         {isLoading ? (
-          <div className="flex justify-center items-center py-4">
-            {/* <Spinner /> Replace this with your actual spinner component */}
-            <span className="sr-only">Loading...</span>
-          </div>
+          <h1 className="text-center py-9">Loading...</h1>
         ) : (
           <Table>
             <TableHeader>

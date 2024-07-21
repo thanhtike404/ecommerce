@@ -1,7 +1,7 @@
 import { NextResponse, NextRequest } from 'next/server';
 import prismaClient from '@/lib/db';
-
 import { revalidateTag } from 'next/cache';
+
 export const GET = async (request: NextRequest) => {
   const orders = await prismaClient.order.findMany({
     include: {
@@ -24,7 +24,6 @@ export const GET = async (request: NextRequest) => {
       (total, item) => total + item.stock.price * item.quantity,
       0
     ),
-
     userImage: order.user.image,
     email: order.user.email,
     orderStatus: order.orderStatus,
@@ -37,7 +36,39 @@ export const GET = async (request: NextRequest) => {
       price: item.stock.price,
     })),
   }));
-  revalidateTag(`orders-all`);
 
-  return Response.json(data);
+  revalidateTag('orders-all');
+  return NextResponse.json(data);
+};
+
+export const POST = async (request: NextRequest) => {
+  try {
+    const { ids: deleteIds } = await request.json();
+    const deletePromises = deleteIds.map((id: number) =>
+      prismaClient.order.delete({
+        where: {
+          id,
+        },
+      })
+    );
+
+    const deleteResults = await Promise.all(deletePromises);
+
+    // Revalidate the cache
+    revalidateTag('orders-all');
+
+    return NextResponse.json({
+      message: 'Orders deleted successfully',
+      deletedIds: deleteResults.map((result) => result.id),
+    });
+  } catch (error) {
+    console.error('Error deleting orders:', error);
+    return NextResponse.json(
+      {
+        message: 'Failed to delete orders',
+        error: error.message,
+      },
+      { status: 500 }
+    );
+  }
 };
