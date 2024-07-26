@@ -1,7 +1,8 @@
+import React from 'react';
 import { ColumnDef, FilterFn } from '@tanstack/react-table';
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
-import { ArrowUpDown, MoreHorizontal } from 'lucide-react';
+import { ArrowUpDown } from 'lucide-react';
 import Image from 'next/image';
 import { Order } from './type';
 import {
@@ -19,6 +20,15 @@ const filterByProductName: FilterFn<Order> = (row, columnId, filterValue) => {
     orderItem?.productName?.toLowerCase().includes(filterValue.toLowerCase()) ??
     false
   );
+};
+
+const orderStatuses = {
+  pending: 'Pending',
+  processing: 'Processing',
+  shipped: 'Shipped',
+  delivered: 'Delivered',
+  canceled: 'Canceled',
+  returned: 'Returned',
 };
 
 export const columns: ColumnDef<Order>[] = [
@@ -201,7 +211,18 @@ export const columns: ColumnDef<Order>[] = [
       </Button>
     ),
     cell: ({ row }) => {
-      return <div className="text-center">{row.getValue('orderStatus')}</div>;
+      const currentStatus = row.getValue('orderStatus');
+      return (
+        <div className="text-center">
+          <select defaultValue={currentStatus}>
+            {Object.keys(orderStatuses).map((status) => (
+              <option key={status} value={status}>
+                {orderStatuses[status]}
+              </option>
+            ))}
+          </select>
+        </div>
+      );
     },
   },
 ];

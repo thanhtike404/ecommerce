@@ -1,4 +1,5 @@
-import Card from '@/components/Card';
+// app/page.tsx
+import Card, { CategoryType } from '@/components/Card';
 import Carousel from '@/components/Carousel';
 import ViewMoreBtn from '@/components/buttons/viewMoreBtn';
 import ViewBtn from '@/components/buttons/viewBtn';
@@ -7,9 +8,72 @@ import Image from 'next/image';
 import NewReleaseCard from '@/components/cards/NewReleaseCard';
 import Link from 'next/link';
 import SingleSlider from '@/components/sliders/SingleSlider';
-import GroupSlider from '@/components/sliders/GroupSlider';
 import ComponentSlide from '@/components/sliders/ComponentSlide';
-export default function Home() {
+import prismaClient from '@/lib/db';
+
+export const revalidate = 30; // ISR configuration
+
+async function getData() {
+  // Fetch categories with product count
+  const categoriesWithProductCount = await prismaClient.category.findMany({
+    where: {
+      products: {
+        some: {},
+      },
+    },
+    include: {
+      _count: {
+        select: {
+          products: true,
+        },
+      },
+    },
+  });
+
+  // Fetch best-selling products with image URL and price
+  const bestSellingProdsRaw = await prismaClient.orderItem.groupBy({
+    by: ['stockId'],
+    _count: {
+      stockId: true,
+    },
+    orderBy: {
+      _count: {
+        stockId: 'desc',
+      },
+    },
+    take: 4,
+  });
+
+  // Retrieve detailed product information using the stockId
+  const bestSellingProds = await Promise.all(
+    bestSellingProdsRaw.map(async (item) => {
+      const stock = await prismaClient.stock.findUnique({
+        where: { id: item.stockId },
+        include: {
+          product: {
+            select: {
+              name: true,
+              imageUrl: true,
+            },
+          },
+        },
+      });
+      return {
+        productId: stock?.productId,
+        name: stock?.product.name,
+        imageUrl: stock?.product.imageUrl,
+        price: stock?.price,
+        orderCount: item._count.stockId,
+      };
+    })
+  );
+
+  return { categoriesWithProductCount, bestSellingProds };
+}
+
+export default async function Home() {
+  const { categoriesWithProductCount, bestSellingProds } = await getData();
+  console.log(bestSellingProds, 'best selling products');
   return (
     <div className="w-full flex flex-col items-center">
       {/* ========== Hero Section ========== */}
@@ -17,11 +81,14 @@ export default function Home() {
 
       {/* =========== First Component ========== */}
       <section className="w-full container flex flex-col items-center mt-8">
-        <h1 className="text-4xl md:text-5xl font-bold">Best Deals</h1>
-        <p className="text-xl md:text-2xl mt-2">Just For You</p>
+        <h1 className="text-4xl md:text-5xl font-bold">By Category Count</h1>
         {/* ------ Cards ------- */}
         <div className="mt-10 flex flex-col items-center gap-6">
-          <Card />
+          <Card
+            categoriesWithProductCount={
+              categoriesWithProductCount as unknown as CategoryType[]
+            }
+          />
           <Link href={'/'}>
             <ViewMoreBtn>
               View More <IoIosArrowForward />
@@ -29,6 +96,7 @@ export default function Home() {
           </Link>
         </div>
       </section>
+
       {/* =========== Second Component ========== */}
       <section className="container flex flex-col lg:flex-row gap-2 text-white">
         <div className="w-full h-[400px] lg:w-7/12 bg-gray-800 rounded-xl p-8 md:p-10 flex flex-col justify-end gap-2">
@@ -81,7 +149,7 @@ export default function Home() {
               </div>
               <p className="text-sm md:text-base">
                 Variety of choices <br className="hidden md:block" />
-                avaliable
+                available
               </p>
             </Link>
           </div>
@@ -91,7 +159,7 @@ export default function Home() {
               alt="vape"
               width={200}
               height={200}
-              className="w-full h-full object-cover object-t"
+              className="w-full h-full object-cover object-top"
             />
             <Link
               href={'/'}
@@ -109,16 +177,17 @@ export default function Home() {
           </div>
         </div>
       </section>
+
       {/* =========== Third Component ========== */}
       <section className="container flex flex-col items-center gap-8">
         <div className="space-y-2">
-          <h1 className="text-5xl font-bold">
-            <span className="text-red-500">New</span> Released
+          <h1 className="text-5xl font-bold mt-5">
+            <span className="text-red-500">Best Sellings</span>
           </h1>
           <p className="text-xl text-center">Try Our Latest Flavours Here</p>
         </div>
 
-        <NewReleaseCard />
+        <NewReleaseCard bestSellingProds={bestSellingProds} />
 
         <Link href={'/'}>
           <ViewMoreBtn>
