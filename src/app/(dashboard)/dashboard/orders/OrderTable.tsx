@@ -12,7 +12,7 @@ import {
   getSortedRowModel,
   flexRender,
 } from '@tanstack/react-table';
-import { QueryClient, useQueryClient } from '@tanstack/react-query';
+import { useQueryClient } from '@tanstack/react-query';
 import { useToast } from '@/components/ui/use-toast';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
@@ -37,8 +37,7 @@ import {
   useOrderStatusChangeMutation,
 } from './useFetchOrders';
 import { ChevronDown } from 'lucide-react';
-// import { Spinner } from '@/components/ui/spinner'; // Assuming you have a Spinner component
-
+import Filter from './filter';
 export default function DataTable() {
   const { toast } = useToast();
   const queryClient = useQueryClient();
@@ -60,7 +59,7 @@ export default function DataTable() {
       {
         onSuccess: (data) => {
           console.log(data);
-          queryClient.invalidateQueries(['order', 'all']);
+          queryClient.invalidateQueries({ queryKey: ['order', 'all'] });
         },
         onError: (error) => {
           console.error('Failed to update order status:', error);
@@ -167,6 +166,11 @@ export default function DataTable() {
                               header.column.columnDef.header,
                               header.getContext()
                             )}
+                        {header.column.getCanFilter() ? (
+                          <div>
+                            <Filter column={header.column} />
+                          </div>
+                        ) : null}
                       </TableHead>
                     );
                   })}

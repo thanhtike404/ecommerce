@@ -14,7 +14,7 @@ const filterByProductName: FilterFn<Order> = (row, columnId, filterValue) => {
   );
 };
 
-const orderStatuses = {
+export const orderStatuses = {
   pending: 'Pending',
   processing: 'Processing',
   shipped: 'Shipped',
@@ -203,7 +203,10 @@ export const ColumnsComponent: React.FC<ColumnsComponentProps> = ({
       ),
     },
     {
-      accessorKey: 'orderStatus', // Unique accessor key
+      accessorKey: 'orderStatus',
+      meta: {
+        filterVariant: 'select',
+      }, // Unique accessor key
       header: ({ column }) => (
         <Button
           variant="ghost"
