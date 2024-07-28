@@ -45,7 +45,7 @@ function AddToCart({ product }: { product: Product }) {
         >
           {product.stock.map((item) => (
             <option key={item.id} value={item.id}>
-              {item.size}
+              {item.size ?? 'N/A'}
             </option>
           ))}
         </select>

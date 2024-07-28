@@ -12,6 +12,8 @@ import {
   getSortedRowModel,
   flexRender,
 } from '@tanstack/react-table';
+import { QueryClient, useQueryClient } from '@tanstack/react-query';
+import { useToast } from '@/components/ui/use-toast';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import {
@@ -28,13 +30,20 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
-import { columns } from './columns';
-import { useFetchOrders, useDeleteIdsMutation } from './useFetchOrders';
+import { ColumnsComponent } from './columns';
+import {
+  useFetchOrders,
+  useDeleteIdsMutation,
+  useOrderStatusChangeMutation,
+} from './useFetchOrders';
 import { ChevronDown } from 'lucide-react';
 // import { Spinner } from '@/components/ui/spinner'; // Assuming you have a Spinner component
 
 export default function DataTable() {
+  const { toast } = useToast();
+  const queryClient = useQueryClient();
   const deleteMutation = useDeleteIdsMutation([]);
+  const orderStatusChangeMutation = useOrderStatusChangeMutation();
   const { data, isLoading, refetch } = useFetchOrders(); // Add refetch here
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [selectedIds, setSelectedIds] = React.useState<number[]>([]);
@@ -44,7 +53,24 @@ export default function DataTable() {
   const [columnVisibility, setColumnVisibility] =
     React.useState<VisibilityState>({});
   const [rowSelection, setRowSelection] = React.useState({});
-
+  const handleOrders = async (orderId: Number, orderStatus: string) => {
+    // Call the mutate function with the order data
+    orderStatusChangeMutation.mutate(
+      { orderId, orderStatus },
+      {
+        onSuccess: (data) => {
+          console.log(data);
+          queryClient.invalidateQueries(['order', 'all']);
+        },
+        onError: (error) => {
+          console.error('Failed to update order status:', error);
+        },
+      }
+    );
+  };
+  const { columns }: any = ColumnsComponent({
+    handleOrderChange: handleOrders,
+  });
   const table = useReactTable({
     data: data ?? [],
     columns,
@@ -63,14 +89,12 @@ export default function DataTable() {
       rowSelection,
     },
   });
-
   React.useEffect(() => {
     const selectIds = table
       .getSelectedRowModel()
       .rows.map((row) => row.original.id);
     setSelectedIds(selectIds);
   }, [table.getSelectedRowModel()]);
-
   return (
     <div className="w-full">
       <div className="flex items-center py-4">
