@@ -1,6 +1,7 @@
 'use client';
 
 import * as React from 'react';
+import { useRouter } from 'next/navigation';
 import {
   SortingState,
   ColumnFiltersState,
@@ -38,7 +39,42 @@ import {
 } from './useFetchOrders';
 import { ChevronDown } from 'lucide-react';
 import Filter from './filter';
+import { usePDF } from 'react-to-pdf';
+import generatePDF, { Resolution, Margin } from 'react-to-pdf';
+
 export default function DataTable() {
+  const options = {
+    method: 'open',
+
+    resolution: Resolution.HIGH,
+    page: {
+      // margin is in MM, default is Margin.NONE = 0
+      margin: Margin.NONE,
+      // default is 'A4'
+      format: 'letter',
+      // default is 'portrait'
+      orientation: 'landscape',
+    },
+    canvas: {
+      // default is 'image/jpeg' for better size performance
+      mimeType: 'image/png',
+      qualityRatio: 1,
+    },
+
+    overrides: {
+      // see https://artskydj.github.io/jsPDF/docs/jsPDF.html for more options
+      pdf: {
+        compress: true,
+      },
+      // see https://html2canvas.hertzen.com/configuration for more options
+      canvas: {
+        useCORS: true,
+      },
+    },
+  };
+  const { toPDF, targetRef } = usePDF({ filename: 'page.pdf' });
+  const getTargetElement = () => document.getElementById('pdf-id');
+  const router = useRouter();
   const { toast } = useToast();
   const queryClient = useQueryClient();
   const deleteMutation = useDeleteIdsMutation([]);
@@ -60,6 +96,7 @@ export default function DataTable() {
         onSuccess: (data) => {
           console.log(data);
           queryClient.invalidateQueries({ queryKey: ['order', 'all'] });
+          refetch();
         },
         onError: (error) => {
           console.error('Failed to update order status:', error);
@@ -96,6 +133,9 @@ export default function DataTable() {
   }, [table.getSelectedRowModel()]);
   return (
     <div className="w-full">
+      <Button onClick={() => generatePDF(getTargetElement, options)}>
+        Download Pdf
+      </Button>
       <div className="flex items-center py-4">
         {selectedIds.length !== 0 && (
           <Button
@@ -153,7 +193,7 @@ export default function DataTable() {
         {isLoading ? (
           <h1 className="text-center py-9">Loading...</h1>
         ) : (
-          <Table>
+          <Table id="pdf-id">
             <TableHeader>
               {table.getHeaderGroups().map((headerGroup) => (
                 <TableRow key={headerGroup.id}>
