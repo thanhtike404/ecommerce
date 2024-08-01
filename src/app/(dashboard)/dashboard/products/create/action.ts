@@ -5,8 +5,37 @@ import { Buffer } from 'buffer';
 import { s3Client } from '@/lib/s3Instance';
 import prismaClient from '@/lib/db';
 import sharp from 'sharp';
+import { z } from 'zod';
+
+// Define Zod schemas
+const productImageSchema = z.object({
+  url: z.string().url('Invalid URL for product image'), // Ensure it's a valid URL
+});
+
+const stockSchema = z.object({
+  sku: z.string().min(1, 'SKU is required'),
+  stock: z.number().int().nonnegative('Stock must be a non-negative integer'),
+  price: z.number().nonnegative('Price must be a non-negative number'),
+  size: z.string().optional(), // Size is optional
+});
+
+const productSchema = z.object({
+  name: z.string().min(1, 'Name is required'),
+  description: z.string().optional(),
+  categoryId: z
+    .number()
+    .int()
+    .nonnegative('Category ID must be a non-negative integer'),
+  statusId: z
+    .number()
+    .int()
+    .nonnegative('Status ID must be a non-negative integer'),
+  images: z.array(productImageSchema).optional(), // Array of product images
+  stock: z.array(stockSchema).optional(), // Array of stock items
+});
 
 export async function createProduct(formData: FormData) {
+  // Extract data from formData
   const name = formData.get('name') as string;
   const description = formData.get('description') as string;
   const image = formData.get('image') as File | null;
@@ -14,6 +43,7 @@ export async function createProduct(formData: FormData) {
   const category = formData.get('category') as string;
   const status = formData.get('status') as string;
 
+  // Parse and validate stock data
   let stock: Array<{
     sku: string;
     stock: number;
@@ -22,6 +52,16 @@ export async function createProduct(formData: FormData) {
   }> = [];
 
   const stockData = formData.get('stock') as string;
+
+  try {
+    productSchema.parse(stockData);
+  } catch (error) {
+    if (error instanceof z.ZodError) {
+      console.error('Validation errors:', error);
+      return { success: false, error: 'Validation error' };
+    }
+  }
+
   if (stockData) {
     try {
       stock = JSON.parse(stockData).map((item: any) => ({
@@ -33,6 +73,25 @@ export async function createProduct(formData: FormData) {
     } catch (error) {
       console.error('Error parsing stock data:', error);
       return { success: false, error: 'Invalid stock data' };
+    }
+  }
+
+  // Validate the entire product data using Zod
+  const productData = {
+    name,
+    description,
+    categoryId: parseInt(category, 10),
+    statusId: parseInt(status, 10),
+    images: files.map((file) => ({ url: file.name })), // Dummy URLs for validation
+    stock,
+  };
+
+  try {
+    productSchema.parse(productData);
+  } catch (error) {
+    if (error instanceof z.ZodError) {
+      console.error('Validation errors:', error);
+      return { success: false, error: 'Validation error' };
     }
   }
 
@@ -53,7 +112,7 @@ export async function createProduct(formData: FormData) {
     await s3.send(new PutObjectCommand(uploadParams));
   };
 
-  const createProduct = {
+  const createProductData = {
     name,
     description,
     statusId: parseInt(status, 10),
@@ -63,12 +122,12 @@ export async function createProduct(formData: FormData) {
   try {
     if (image) {
       const key = `product_images/${Date.now()}._.${image.name}.webp`;
-      createProduct.imageUrl = `${process.env.image_url}/${key}`;
+      createProductData.imageUrl = `${process.env.image_url}/${key}`;
       await uploadToS3(image, key);
     }
 
     const product = await prismaClient.product.create({
-      data: createProduct,
+      data: createProductData,
     });
 
     if (files.length > 0) {

@@ -68,7 +68,9 @@ export default function ProductForm() {
 
     try {
       const response = await createProduct(formData);
-
+      if (response.error) {
+        console.log(response.error);
+      }
       if (response.success) {
         router.push('/dashboard/products');
       }
