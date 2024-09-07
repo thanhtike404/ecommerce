@@ -25,7 +25,11 @@ export async function middleware(req) {
   }
 
   // If the user is not an admin, let them access other protected routes
-  if (session.role !== 'ADMIN' && req.nextUrl.pathname === '/dashboard') {
+  if (
+    session.role !== 'ADMIN' &&
+    req.nextUrl.pathname === '/dashboard' &&
+    !session
+  ) {
     url.pathname = '/auth/signin';
     return NextResponse.redirect(url);
   }
@@ -35,5 +39,5 @@ export async function middleware(req) {
 }
 
 export const config = {
-  matcher: ['/dashboard', '/checkout', '/orders'],
+  matcher: ['/dashboard/', '/checkout', '/orders'],
 };

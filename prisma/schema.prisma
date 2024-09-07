@@ -122,20 +122,23 @@ orderItems OrderItem[]
 model Order {
   id              Int      @id @default(autoincrement())
   orderDate       DateTime
-  userId          String  @map("user_id")
+  userId          String   @map("user_id")
   totalAmount     Float
   paymentStatus   String
-  paymentMethod   String?
+  paymentMethodId Int     @map("paymentMethod_id")
   orderStatus     String?
   shippingAddress String?
   billingAddress  String?
   createdAt       DateTime @default(now())
   updatedAt       DateTime @updatedAt
 
+  paymentMethod   PaymentMethod @relation(fields: [paymentMethodId], references: [id]) // Relation to PaymentMethod
+  user            User          @relation(fields: [userId], references: [id])
+
   orderItems      OrderItem[]
-  
-  user            User     @relation(fields: [userId], references: [id])
+
   @@index([userId], map: "Order_userId_fkey")
+  @@index([paymentMethodId], map: "Order_paymentMethodId_fkey")
 }
 
 
@@ -157,6 +160,12 @@ model OrderItem {
   @@index([orderId], map: "OrderItem_orderId_fkey")
   @@index([stockId], map: "OrderItem_stockId_fkey")
 }
+model PaymentMethod {
+  id    Int    @id @default(autoincrement())
+  name  String @unique
+  orders Order[]
+}
+
 
 enum Role {
   USER

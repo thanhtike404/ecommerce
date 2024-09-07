@@ -1,0 +1,172 @@
+// generator client {
+//   provider = "prisma-client-js"
+// }
+
+// datasource db {
+//   provider = "mysql"
+//   url      = env("DATABASE_URL")
+// }
+
+// model Account {
+//   id                 String  @id @default(cuid())
+//   userId             String  @map("user_id")
+//   type               String
+//   provider           String
+//   providerAccountId  String  @map("provider_account_id")
+//   refresh_token      String? @db.Text
+//   access_token       String? @db.Text
+//   expires_at         Int?
+//   token_type         String?
+//   scope              String?
+//   id_token           String? @db.Text
+//   session_state      String?
+ 
+//   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+ 
+//   @@unique([provider, providerAccountId])
+//   @@map("accounts")
+// }
+ 
+// model Session {
+//   id           String   @id @default(cuid())
+//   sessionToken String   @unique @map("session_token")
+//   userId       String   @map("user_id")
+//   expires      DateTime
+//   user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+ 
+//   @@map("sessions")
+// }
+ 
+// model User {
+//   id            String    @id @default(cuid())
+//   name          String?
+//   email         String?   @unique
+//   emailVerified DateTime? @map("email_verified")
+//   image         String?
+//   accounts      Account[]
+//   sessions      Session[]
+//   orders        Order[]
+//   role          Role      @default(USER)
+//   @@map("users")
+// }
+ 
+// model VerificationToken {
+//   identifier String
+//   token      String
+//   expires    DateTime
+ 
+//   @@unique([identifier, token])
+//   @@map("verificationtokens")
+// }
+
+// model Category {
+//   id        Int       @id @default(autoincrement())
+//   name      String
+//   iconUrl   String?
+//   createdAt DateTime  @default(now())
+//   updatedAt DateTime  @updatedAt
+//   products  Product[]
+// }
+
+// model Product {
+//   id          Int            @id @default(autoincrement())
+//   name        String
+//   description String?
+//   imageUrl    String?
+//   categoryId  Int
+//   createdAt   DateTime       @default(now())
+//   updatedAt   DateTime       @updatedAt
+//   statusId    Int
+//   category    Category       @relation(fields: [categoryId], references: [id])
+//   status      ProductStatus  @relation(fields: [statusId], references: [id])
+//   images      ProductImage[]
+//   stock       Stock[]
+
+//   @@index([categoryId], map: "Product_categoryId_fkey")
+//   @@index([statusId], map: "Product_statusId_fkey")
+// }
+
+// model ProductStatus {
+//   id        Int       @id @default(autoincrement())
+//   name      String
+//   createdAt DateTime? @default(now()) @db.DateTime(0)
+//   updatedAt DateTime? @default(now()) @db.DateTime(0)
+//   products  Product[]
+// }
+
+// model ProductImage {
+//   id        Int      @id @default(autoincrement())
+//   productId Int
+//   url       String
+//   createdAt DateTime @default(now())
+//   updatedAt DateTime @updatedAt
+//   product   Product  @relation(fields: [productId], references: [id])
+
+//   @@index([productId], map: "ProductImage_productId_fkey")
+// }
+
+// model Stock {
+//   id        Int      @id @default(autoincrement())
+//   productId Int
+//   sku       String
+//   stock     Int
+//   price     Float
+//   size      String?
+//   createdAt DateTime @default(now())
+//   updatedAt DateTime @updatedAt
+//   product   Product  @relation(fields: [productId], references: [id])
+// orderItems OrderItem[] 
+//   @@index([productId], map: "Stock_productId_fkey")
+// }
+
+// model Order {
+//   id              Int      @id @default(autoincrement())
+//   orderDate       DateTime
+//   userId          String  @map("user_id")
+//   totalAmount     Float
+//   paymentStatus   String
+//   paymentMethodId Int
+//   orderStatus     String?
+//   shippingAddress String?
+//   billingAddress  String?
+//   createdAt       DateTime @default(now())
+//   updatedAt       DateTime @updatedAt
+
+//   orderItems      OrderItem[]
+//   paymentMethod   PaymentMethod @relation(fields: [paymentMethodId], references: [id])
+  
+//   user            User     @relation(fields: [userId], references: [id])
+//   @@index([userId], map: "Order_userId_fkey")
+//   @@index([paymentMethodId], map: "Order_paymentMethodId_fkey")
+// }
+
+
+
+
+// model OrderItem {
+//   id          Int      @id @default(autoincrement())
+//   orderId     Int
+//   stockId     Int
+//   quantity    Int
+//   unitPrice   Float
+//   totalPrice  Float
+//   createdAt   DateTime @default(now())
+//   updatedAt   DateTime @updatedAt
+
+//     order       Order    @relation(fields: [orderId], references: [id], onDelete: Cascade) // Specify onDelete here
+//   stock       Stock    @relation(fields: [stockId], references: [id])
+  
+//   @@index([orderId], map: "OrderItem_orderId_fkey")
+//   @@index([stockId], map: "OrderItem_stockId_fkey")
+// }
+// model PaymentMethod {
+//   id    Int    @id @default(autoincrement())
+//   name  String @unique
+//   orders Order[]
+// }
+
+
+// enum Role {
+//   USER
+//   ADMIN
+// }

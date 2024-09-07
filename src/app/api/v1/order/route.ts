@@ -27,6 +27,7 @@ export const GET = async (request: NextRequest) => {
           },
         },
       },
+      paymentMethod: true,
     },
   });
 
@@ -36,6 +37,7 @@ export const GET = async (request: NextRequest) => {
       (total, item) => total + item.stock.price * item.quantity,
       0
     ),
+    paymentMethod: order.paymentMethod.name,
     orderStatus: order.orderStatus,
     orderItems: order.orderItems.map((item) => ({
       id: item.id,
@@ -45,6 +47,7 @@ export const GET = async (request: NextRequest) => {
       quantity: item.quantity,
       price: item.stock.price,
     })),
+    createdAt: order.createdAt,
   }));
   revalidateTag(`orders-${email}`);
 
@@ -77,16 +80,22 @@ export const POST = async (request: Request) => {
       orderDate: new Date(),
       totalAmount: stock.price * quantity,
       paymentStatus: 'pending',
-      paymentMethod: 'Paypal',
       orderStatus: 'pending',
       shippingAddress: 'idk',
       billingAddress: 'idk',
+      paymentMethod: {
+        connect: {
+          id: 1, // Connect to the existing payment method by ID
+        },
+      },
       user: {
         connect: {
           id: user.id,
         },
       },
     };
+
+    console.log(data);
 
     try {
       const order = await prismaClient.order.create({
@@ -112,7 +121,10 @@ export const POST = async (request: Request) => {
           },
         });
       } catch (error) {
-        return Response.json({ message: error.message });
+        return Response.json({
+          message: error.message,
+          'order error': error.message,
+        });
       }
     } catch (error) {
       return Response.json({ message: error.message });

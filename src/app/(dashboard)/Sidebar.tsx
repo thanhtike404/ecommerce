@@ -29,6 +29,7 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from '@/components/ui/tooltip';
+import { BsGear } from 'react-icons/bs';
 function Sidebar() {
   const links = [
     {
@@ -54,6 +55,12 @@ function Sidebar() {
       href: '/dashboard/orders',
       title: 'Orders',
       icon: <ShoppingCart className="h-5 w-5" />,
+    },
+    {
+      id: 1,
+      href: '/dashboard/orders',
+      title: 'Site Settings',
+      icon: <BsGear className="h-5 w-5" />,
     },
   ];
 

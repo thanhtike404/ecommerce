@@ -1,5 +1,5 @@
 'use client';
-import React from 'react';
+import React, { useEffect } from 'react';
 import Link from 'next/link';
 
 import { useRouter, usePathname } from 'next/navigation';
@@ -33,18 +33,25 @@ import {
 } from '@/components/ui/dropdown-menu';
 import Image from 'next/image';
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
+import { useSession, signOut } from 'next-auth/react';
 
 function Menubar() {
+  const { data: session } = useSession();
+
   const router = useRouter();
   const currentPath = usePathname();
   const isActive = (path) => router.pathname === path;
-
+  useEffect(() => {
+    if (session) {
+      console.log(session.user);
+    }
+  }, []);
   return (
     <header className="sticky dark:bg-black top-0 z-30 flex h-14 items-center gap-4 border-b bg-background px-4 sm:static sm:h-auto sm:border-0 sm:bg-transparent sm:px-6">
       <Sheet>
         <SheetTrigger asChild>
           <Button size="icon" variant="outline" className="sm:hidden">
-            <PanelLeft className="h-5 w-5" />
+            <PanelLeft className="h-5 w-5 " />
             <span className="sr-only">Toggle Menu</span>
           </Button>
         </SheetTrigger>
@@ -116,7 +123,7 @@ function Menubar() {
             className="overflow-hidden rounded-full"
           >
             <Image
-              src="/placeholder-user.jpg"
+              src={session?.user?.image || '/avatar.png'}
               width={36}
               height={36}
               alt="Avatar"
@@ -125,12 +132,16 @@ function Menubar() {
           </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end">
-          <DropdownMenuLabel>My Account</DropdownMenuLabel>
+          <DropdownMenuLabel>{session?.user?.name || 'User'}</DropdownMenuLabel>
           <DropdownMenuSeparator />
           <DropdownMenuItem>Settings</DropdownMenuItem>
           <DropdownMenuItem>Support</DropdownMenuItem>
           <DropdownMenuSeparator />
-          <DropdownMenuItem>Logout</DropdownMenuItem>
+          <DropdownMenuItem
+            onClick={() => signOut({ callbackUrl: '/auth/signin' })}
+          >
+            Logout
+          </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>
     </header>

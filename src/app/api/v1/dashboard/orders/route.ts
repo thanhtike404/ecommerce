@@ -5,6 +5,7 @@ import { revalidateTag } from 'next/cache';
 export const GET = async (request: NextRequest) => {
   const orders = await prismaClient.order.findMany({
     include: {
+      paymentMethod: true,
       orderItems: {
         include: {
           stock: {
@@ -24,6 +25,8 @@ export const GET = async (request: NextRequest) => {
       (total, item) => total + item.stock.price * item.quantity,
       0
     ),
+    paymentMethod: order.paymentMethod.name,
+
     userImage: order.user.image,
     email: order.user.email,
     orderStatus: order.orderStatus,

@@ -6,6 +6,13 @@ import Product from './Product';
 import { useSession } from 'next-auth/react';
 import TotalPrice from './totalPrice';
 import axios from 'axios';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 
 const CartPage = () => {
   const cart = useCartStore((state) => state.cart);
@@ -18,9 +25,15 @@ const CartPage = () => {
   const orderMutation = useMutation({
     mutationKey: ['order'],
     mutationFn: async (item) => {
-      const response = await axios.post('/api/v1/order', item);
+      console.log('Order item: ', item);
+      try {
+        const response = await axios.post('/api/v1/order', item);
+        console.log('Order created: ', response.data);
 
-      return response.data;
+        return response.data;
+      } catch (error) {
+        console.error('Error ordering: ', error.message);
+      }
     },
     onSuccess(data, variables, context) {
       clearCart();
@@ -33,7 +46,8 @@ const CartPage = () => {
         item.email = session?.user?.email;
         orderMutation.mutate(item);
       });
-      alert('Order placed successfully');
+      // alert('Order placed successfully');
+
       clearCart();
     } catch (error) {
       alert('error ordering: ', error.message);
@@ -47,6 +61,7 @@ const CartPage = () => {
   return (
     <div className="container mx-auto mt-24 p-4">
       <h1 className="text-3xl font-bold mb-8">Shopping Cart</h1>
+
       <div className="flex flex-col lg:flex-row lg:space-x-8">
         <div className="flex-grow">
           <div className="bg-white shadow-md rounded-lg p-6 mb-6">
@@ -83,6 +98,19 @@ const CartPage = () => {
               <span>$1,650</span>
             </div>
           </div>
+          <h3 className="mb-3"></h3>
+          <div className="mb-3 ">
+            <Select>
+              <SelectTrigger>
+                <SelectValue placeholder="Select Payment method" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="light">Cash On Delivery</SelectItem>
+                <SelectItem value="dark">ATM</SelectItem>
+                <SelectItem value="system">Mobile Bankings</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
 
           <div className="mb-4">
             <label
@@ -114,7 +142,6 @@ const CartPage = () => {
           </div>
         </div>
       </div>
-
       <div className="mt-6 bg-green-100 text-green-700 p-4 rounded text-center">
         Free Delivery within 1-2 weeks
       </div>

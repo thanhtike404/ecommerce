@@ -35,10 +35,15 @@ export default function Dashboard() {
   const [maxPrice, setMaxPrice] = useState<number | ''>('');
 
   const fetchProducts = async () => {
-    const response = await axios.get(
-      `/api/v1/products?page=${page}&search=${search}&minPrice=${minPrice}&maxPrice=${maxPrice}`
-    );
-    return response.data;
+
+    try{
+      const response = await axios.get(
+          `/api/v1/products?page=${page}&search=${search}&minPrice=${minPrice}&maxPrice=${maxPrice}`
+      );
+      return response.data;
+    }catch (err){
+      console.error(err);
+    }
   };
 
   const { isLoading, data, error, isFetching, isPlaceholderData } = useQuery({

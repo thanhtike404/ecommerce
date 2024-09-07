@@ -4,8 +4,15 @@ import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
 import { ArrowUpDown } from 'lucide-react';
 import Image from 'next/image';
+import { Calendar } from '@/components/ui/calendar';
 import { Order } from './type';
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from '@/components/ui/popover';
 import { useState } from 'react';
+import { Badge } from '@/components/ui/badge';
 const filterByProductName: FilterFn<Order> = (row, columnId, filterValue) => {
   const orderItem = row.original.orderItems[0];
   return (
@@ -26,13 +33,23 @@ export const orderStatuses = {
 interface ColumnsComponentProps {
   handleOrderChange: (id: string, role: string) => void;
 }
+const filterByDate: FilterFn<Order> = (row, columnId, filterValue) => {
+  const rowDate = new Date(row.getValue(columnId)).setHours(0, 0, 0, 0);
+  const filterDate = filterValue?.setHours(0, 0, 0, 0);
+  return rowDate === filterDate;
+};
 
 export const ColumnsComponent: React.FC<ColumnsComponentProps> = ({
   handleOrderChange,
 }) => {
+  const [date, setDate] = React.useState<Date | undefined>(new Date());
+  const [selectedDate, setSelectedDate] = React.useState<Date | undefined>(
+    undefined
+  );
   const columns: ColumnDef<Order>[] = [
     {
       id: 'select',
+
       header: ({ table }) => (
         <Checkbox
           checked={
@@ -59,6 +76,7 @@ export const ColumnsComponent: React.FC<ColumnsComponentProps> = ({
     },
     {
       accessorKey: 'id',
+      enableColumnFilter: false,
       header: ({ column }) => (
         <Button
           variant="ghost"
@@ -72,24 +90,10 @@ export const ColumnsComponent: React.FC<ColumnsComponentProps> = ({
         <div className="text-center">{row.getValue('id')}</div>
       ),
     },
-    {
-      accessorKey: 'email',
-      header: ({ column }) => (
-        <Button
-          variant="ghost"
-          onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
-        >
-          Email
-          <ArrowUpDown className="ml-2 h-4 w-4" />
-        </Button>
-      ),
-      cell: ({ row }) => (
-        <h3 className="text-center">{row.getValue('email')}</h3>
-      ),
-    },
 
     {
-      accessorKey: 'productImage', // Unique accessor key
+      accessorKey: 'productImage',
+      enableColumnFilter: false, // Unique accessor key
       header: ({ column }) => (
         <Button
           variant="ghost"
@@ -215,22 +219,57 @@ export const ColumnsComponent: React.FC<ColumnsComponentProps> = ({
 
         return (
           <div className="text-center">
-            <select
-              className="px-4 py-2"
-              defaultValue={currentStatus}
-              onChange={(e) =>
-                handleOrderChange(row.getValue('id'), e.target.value)
+            <Badge
+              variant={
+                orderStatuses[currentStatus] !== 'pending'
+                  ? 'secondary'
+                  : 'destructive'
               }
             >
-              {Object.keys(orderStatuses).map((status) => (
-                <option key={status} value={status}>
-                  {orderStatuses[status]}
-                </option>
-              ))}
-            </select>
+              {orderStatuses[currentStatus]}
+            </Badge>
           </div>
         );
       },
+    },
+    {
+      accessorKey: 'createdAt',
+      header: ({ column }) => (
+        <Popover>
+          <PopoverTrigger asChild>
+            <Button variant={'outline'}>
+              {selectedDate
+                ? selectedDate.toLocaleDateString('en-US')
+                : 'Select Date'}
+            </Button>
+          </PopoverTrigger>
+          <PopoverContent className="w-auto p-0" align="start">
+            <Calendar
+              mode="single"
+              selected={selectedDate}
+              onSelect={(date) => {
+                setSelectedDate(date);
+                column.setFilterValue(date); // Update the filter value with the selected date
+              }}
+              disabled={(date) =>
+                date > new Date() || date < new Date('1900-01-01')
+              }
+              initialFocus
+            />
+          </PopoverContent>
+        </Popover>
+      ),
+      cell: ({ row }) => (
+        <div className="text-center">
+          {new Date(row.getValue('createdAt')).toLocaleDateString('en-US', {
+            day: 'numeric',
+            month: 'long',
+            year: 'numeric',
+          })}
+        </div>
+      ),
+      filterFn: filterByDate, // Use the custom filter function here
+      enableColumnFilter: true, // Enable column filtering
     },
   ];
 
