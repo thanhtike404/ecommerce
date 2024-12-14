@@ -12,7 +12,7 @@ const slides = [
   { url: '/sliderImgs/img5.jpg' },
 ];
 
-export default function Carousel() {
+export default function Carousel({ banners }: any) {
   const [currentIndex, setCurrentIndex] = useState(0);
 
   useEffect(() => {
@@ -43,7 +43,7 @@ export default function Carousel() {
   return (
     <div className="w-full h-[85vh] relative group">
       <div
-        style={{ backgroundImage: `url(${slides[currentIndex].url})` }}
+        style={{ backgroundImage: `url(${banners[currentIndex]?.imageUrl})` }}
         className="w-full h-full bg-top bg-cover duration-500 flex items-end justify-center"
       >
         <div className="flex flex-col items-center gap-2 text-white mb-20">
@@ -70,9 +70,9 @@ export default function Carousel() {
         <BsChevronCompactRight size={30} />
       </div>
       <div className="flex top-4 justify-center py-2">
-        {slides.map((slide, slideIndex) => (
+        {banners.map((banner, slideIndex) => (
           <div
-            key={slideIndex}
+            key={banner.id}
             onClick={() => goToSlide(slideIndex)}
             className="text-2xl cursor-pointer"
           >
