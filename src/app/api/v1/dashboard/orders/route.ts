@@ -26,7 +26,7 @@ export const GET = async (request: NextRequest) => {
       0
     ),
     paymentMethod: order.paymentMethod.name,
-
+    sailDate: order.sailDate,
     userImage: order.user.image,
     email: order.user.email,
     orderStatus: order.orderStatus,

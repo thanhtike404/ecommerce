@@ -24,10 +24,10 @@ const CartPage = () => {
   }, []);
   const orderMutation = useMutation({
     mutationKey: ['order'],
-    mutationFn: async (item) => {
-      console.log('Order item: ', item);
+    mutationFn: async (order) => {
+      console.log('Order item: ', order);
       try {
-        const response = await axios.post('/api/v1/order', item);
+        const response = await axios.post('/api/v1/order', order);
         console.log('Order created: ', response.data);
 
         return response.data;

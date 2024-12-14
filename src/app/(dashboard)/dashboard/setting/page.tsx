@@ -1,13 +1,11 @@
-'use client';
 import React from 'react';
-import CarouselUploader from './CarouselUploader'; // adjust the path as necessary
-
-function Page() {
+import Link from 'next/link';
+function page() {
   return (
-    <div className="py-4">
-      <CarouselUploader />
+    <div>
+      <Link href={'/dashboard/setting/homeBanner'}>Home Page Banner</Link>
     </div>
   );
 }
 
-export default Page;
+export default page;

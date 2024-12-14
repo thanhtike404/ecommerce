@@ -58,7 +58,7 @@ function Sidebar() {
     },
     {
       id: 1,
-      href: '/dashboard/orders',
+      href: '/dashboard/setting/homeBanner',
       title: 'Site Settings',
       icon: <BsGear className="h-5 w-5" />,
     },

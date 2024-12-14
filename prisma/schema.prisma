@@ -125,12 +125,14 @@ model Order {
   userId          String   @map("user_id")
   totalAmount     Float
   paymentStatus   String
-  paymentMethodId Int     @map("paymentMethod_id")
+  paymentMethodId Int      @map("paymentMethod_id")
   orderStatus     String?
   shippingAddress String?
   billingAddress  String?
-  createdAt       DateTime @default(now())
-  updatedAt       DateTime @updatedAt
+  sailDate        DateTime? // New field for sail date
+  deliverySteps   Json?     // New field for delivery steps (as JSON)
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
 
   paymentMethod   PaymentMethod @relation(fields: [paymentMethodId], references: [id]) // Relation to PaymentMethod
   user            User          @relation(fields: [userId], references: [id])
@@ -165,6 +167,20 @@ model PaymentMethod {
   name  String @unique
   orders Order[]
 }
+model HomePageBannner {
+  id        Int      @id @default(autoincrement())
+  title     String?  // Optional title for the banner
+  imageUrl  String   // URL for the banner image
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  status    BannerStatus @default(ACTIVE) // Enum to manage banner status (e.g., active, inactive)
+}
+
+enum BannerStatus {
+  ACTIVE
+  INACTIVE
+}
+
 
 
 enum Role {

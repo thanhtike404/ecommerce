@@ -7,8 +7,18 @@ export const PUT = async (
 ) => {
   try {
     const body = await request.json();
-    const { status } = body;
+    const { status, sailDate } = body;
 
+    if (!status) {
+      const updateSailDate = await prismaClient.order.update({
+        where: { id: Number(params.id) },
+        data: { sailDate },
+      });
+      return NextResponse.json(
+        { message: 'Status updated successfully', data: updateSailDate },
+        { status: 200 }
+      );
+    }
     console.log(body, 'request body');
 
     const updatedData = await prismaClient.order.update({

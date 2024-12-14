@@ -58,6 +58,7 @@ export const POST = async (request: Request) => {
   const body = await request.json();
 
   try {
+    console.log(body, 'its from order api');
     const { email, quantity, stockId } = body;
     const user = await prismaClient.user.findUnique({
       where: { email: email },
@@ -76,6 +77,7 @@ export const POST = async (request: Request) => {
       return new Response(JSON.stringify({ message: 'Stock not found' }));
     }
 
+    console.log('stock found');
     const data = {
       orderDate: new Date(),
       totalAmount: stock.price * quantity,
@@ -127,6 +129,7 @@ export const POST = async (request: Request) => {
         });
       }
     } catch (error) {
+      console.log(error.message);
       return Response.json({ message: error.message });
     }
 

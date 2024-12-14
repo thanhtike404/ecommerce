@@ -6,6 +6,7 @@ import { ArrowUpDown } from 'lucide-react';
 import Image from 'next/image';
 import { Order } from './type';
 import { useState } from 'react';
+import { CalendarForm } from '@/components/DateRange';
 const filterByProductName: FilterFn<Order> = (row, columnId, filterValue) => {
   const orderItem = row.original.orderItems[0];
   return (
@@ -229,6 +230,23 @@ export const ColumnsComponent: React.FC<ColumnsComponentProps> = ({
               ))}
             </select>
           </div>
+        );
+      },
+    },
+    {
+      accessorKey: 'sailDate',
+      meta: {
+        filterVariant: 'range',
+      },
+
+      cell: ({ row }) => {
+        console.log(row);
+        return (
+          <CalendarForm
+            type="submit"
+            orderId={row.getValue('id')}
+            sailDate={row.getValue('sailDate')}
+          />
         );
       },
     },

@@ -11,7 +11,7 @@ export const GET = async (request: NextRequest) => {
             name: true,
           },
         },
-
+        images: true,
         stock: true,
       },
     });

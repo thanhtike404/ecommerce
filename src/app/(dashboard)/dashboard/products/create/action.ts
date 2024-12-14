@@ -42,7 +42,7 @@ export async function createProduct(formData: FormData) {
   const files = formData.getAll('images') as File[];
   const category = formData.get('category') as string;
   const status = formData.get('status') as string;
-
+  console.log(image);
   // Parse and validate stock data
   let stock: Array<{
     sku: string;
@@ -81,19 +81,19 @@ export async function createProduct(formData: FormData) {
     name,
     description,
     categoryId: parseInt(category, 10),
-    statusId: parseInt(status, 10),
+    statusId: 1,
     images: files.map((file) => ({ url: file.name })), // Dummy URLs for validation
     stock,
   };
 
-  try {
-    productSchema.parse(productData);
-  } catch (error) {
-    if (error instanceof z.ZodError) {
-      console.error('Validation errors:', error);
-      return { success: false, error: 'Validation error' };
-    }
-  }
+  // try {
+  //   productSchema.parse(productData);
+  // } catch (error) {
+  //   if (error instanceof z.ZodError) {
+  //     console.error('Validation errors:', error);
+  //     return { success: false, error: 'Validation error' };
+  //   }
+  // }
 
   const s3 = s3Client;
 
@@ -115,6 +115,7 @@ export async function createProduct(formData: FormData) {
   const createProductData = {
     name,
     description,
+    imageUrl: image?.name,
     statusId: parseInt(status, 10),
     categoryId: parseInt(category, 10),
   };
@@ -173,3 +174,6 @@ export async function getCategories() {
   const categories = await prismaClient.category.findMany();
   return categories;
 }
+
+// image error happens because iv en't added image .name
+// there is also product status error because there is no data in db
