@@ -35,15 +35,9 @@ import { ChevronDown } from 'lucide-react';
 import useCategoryStore from '@/store/dashboard/categoryStore';
 import { columns } from './categoryTableColumns';
 import { fetchCategories } from './categoryTableUtils';
-
+import { Category } from '@/types/CategoryType';
 export type CategoryTableProps = {
-  categories: Array<{
-    id: string;
-    name: string;
-    iconUrl: string;
-    createdAt: string;
-    updatedAt: string;
-  }>;
+  categories: Category[];
 };
 
 export default function CategoryTable({ categories }: CategoryTableProps) {

@@ -108,8 +108,12 @@ export async function createProduct(formData: FormData) {
       Body: webpBuffer,
       ContentType: 'image/webp',
     };
-
-    await s3.send(new PutObjectCommand(uploadParams));
+    try {
+      await s3.send(new PutObjectCommand(uploadParams));
+      console.log('success');
+    } catch (error) {
+      console.log(error);
+    }
   };
 
   const createProductData = {

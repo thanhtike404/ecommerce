@@ -8,13 +8,6 @@ import Link from 'next/link';
 import axios from 'axios';
 import { Input } from '@/components/ui/input';
 import { Label } from '@radix-ui/react-label';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
 
 import {
   Pagination,
@@ -35,13 +28,12 @@ export default function Dashboard() {
   const [maxPrice, setMaxPrice] = useState<number | ''>('');
 
   const fetchProducts = async () => {
-
-    try{
+    try {
       const response = await axios.get(
-          `/api/v1/products?page=${page}&search=${search}&minPrice=${minPrice}&maxPrice=${maxPrice}`
+        `/api/v1/products?page=${page}&search=${search}&minPrice=${minPrice}&maxPrice=${maxPrice}`
       );
       return response.data;
-    }catch (err){
+    } catch (err) {
       console.error(err);
     }
   };

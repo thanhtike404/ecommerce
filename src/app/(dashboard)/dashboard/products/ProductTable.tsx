@@ -1,4 +1,3 @@
-// components/ProductTable/ProductTable.tsx
 'use client';
 import React, { useState } from 'react';
 import {
@@ -50,6 +49,7 @@ const ProductTable: React.FC = () => {
   console.log(data);
   const table = useReactTable({
     data: data || [],
+    // @ts-ignore
     columns,
     getCoreRowModel: getCoreRowModel(),
     onColumnFiltersChange: setColumnFilters,

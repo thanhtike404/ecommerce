@@ -29,6 +29,10 @@ async function getData() {
       },
     },
   });
+  console.log('AWS Access Key ID:', process.env.AWS_ACCESS_KEY_ID);
+  console.log('AWS Bucket Name:', process.env.AWS_BUCKET_NAME);
+  console.log('AWS Region:', process.env.AWS_REGION);
+  console.log('Image URL:', process.env.image_url);
 
   // Fetch active banners
   const banners = await prismaClient.homePageBannner.findMany({

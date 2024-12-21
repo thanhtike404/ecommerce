@@ -1,12 +1,16 @@
 import { S3Client, DeleteObjectCommand } from '@aws-sdk/client-s3';
 import { createPresignedPost } from '@aws-sdk/s3-presigned-post';
 export const s3Client = new S3Client({
+  forcePathStyle: true,
   region: process.env.AWS_REGION as string,
+  endpoint: process.env.image_url,
   credentials: {
     accessKeyId: process.env.AWS_ACCESS_KEY_ID as string,
     secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY as string,
   },
 });
+
+console.log(process.env.AWS_ACCESS_KEY_ID, process.env.AWS_BUCKET_NAME);
 
 export const s3Init = async (key: string, fileType: string) => {
   const { url, fields } = await createPresignedPost(s3Client, {

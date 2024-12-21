@@ -3,21 +3,20 @@ import React, { useState, useEffect } from 'react';
 import { BsChevronCompactLeft, BsChevronCompactRight } from 'react-icons/bs';
 import { RxDotFilled } from 'react-icons/rx';
 import ViewBtn from '@/components/buttons/viewBtn';
-
-const slides = [
-  { url: '/sliderImgs/img1.jpg' },
-  { url: '/sliderImgs/img2.jpg' },
-  { url: '/sliderImgs/img3.jpg' },
-  { url: '/sliderImgs/img4.jpg' },
-  { url: '/sliderImgs/img5.jpg' },
-];
-
-export default function Carousel({ banners }: any) {
+type Banner = {
+  id: number;
+  title: string;
+  imageUrl: string;
+  createdAt: Date;
+  updatedAt: Date;
+  status: 'ACTIVE' | 'INACTIVE'; // Enum-like typing for status
+};
+export default function Carousel({ banners }: { banners: Banner[] }) {
   const [currentIndex, setCurrentIndex] = useState(0);
 
   useEffect(() => {
     const timer = setTimeout(() => {
-      const newIndex = (currentIndex + 1) % slides.length;
+      const newIndex = (currentIndex + 1) % banners.length;
       setCurrentIndex(newIndex);
     }, 4000);
 
@@ -26,12 +25,12 @@ export default function Carousel({ banners }: any) {
 
   const prevSlide = () => {
     const isFirstSlide = currentIndex === 0;
-    const newIndex = isFirstSlide ? slides.length - 1 : currentIndex - 1;
+    const newIndex = isFirstSlide ? banners.length - 1 : currentIndex - 1;
     setCurrentIndex(newIndex);
   };
 
   const nextSlide = () => {
-    const isLastSlide = currentIndex === slides.length - 1;
+    const isLastSlide = currentIndex === banners.length - 1;
     const newIndex = isLastSlide ? 0 : currentIndex + 1;
     setCurrentIndex(newIndex);
   };
