@@ -59,21 +59,11 @@ export default function CategoryForm() {
       }),
 
     onSuccess: async (data: any, formData: FormData) => {
-      const { url, fields } = data.data;
-
-      // Prepare data for S3 upload
-      const s3FormData = new FormData();
-      Object.entries(fields).forEach(([key, value]) => {
-        s3FormData.append(key, value as string);
-      });
-      s3FormData.append('file', formData.get('categoryIcon') as Blob);
-
-      // Upload to S3
-      await axios.post(url, s3FormData);
       toast({
         title: 'Success',
         description: 'Category created successfully',
       });
+
       reset();
       setPreview(null);
       queryClient.invalidateQueries({ queryKey: ['categories'] });

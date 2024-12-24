@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 import prismaClient from '@/lib/db';
-import { s3Client, deletes3CategoryIcon, s3Init } from '@/lib/s3Instance';
+import { s3Client, deletes3CategoryIcon, s3Init } from '@/lib/s3/s3Instance';
 export const DELETE = async (
   request: Request,
   { params }: { params: { id: string } }

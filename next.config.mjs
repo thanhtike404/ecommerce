@@ -31,6 +31,10 @@ const nextConfig = {
         protocol: 'https',
         hostname: 'klzgnauibtxsifayqtch.supabase.co',
       },
+      {
+        protocol: 'https',
+        hostname: 'nexcommerce.s3.ap-southeast-1.amazonaws.com',
+      },
     ],
   },
 };

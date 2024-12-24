@@ -1,6 +1,7 @@
 import { NextResponse, NextRequest } from 'next/server';
 import prismaClient from '@/lib/db';
-import { s3Init } from '@/lib/s3Instance';
+import { s3Init } from '@/lib/s3/s3Instance';
+import { uploadToS3 } from '@/lib/s3/upload';
 export const POST = async (request: NextRequest) => {
   try {
     const formData = await request.formData();
@@ -8,6 +9,7 @@ export const POST = async (request: NextRequest) => {
     const formDataObj = Object.fromEntries(formData.entries());
     const { categoryName, categoryIcon } = formDataObj;
 
+    console.log(formData.get('categoryIcon'), 'form data');
     const fileExtension =
       categoryIcon instanceof File
         ? categoryIcon.name.split('.').pop()
@@ -19,7 +21,7 @@ export const POST = async (request: NextRequest) => {
       categoryIcon instanceof File
         ? categoryIcon.name.split('.').slice(0, -1).join('.')
         : categoryIcon;
-    const key = `${Date.now()}_${categoryIconName}.${fileExtension}`;
+    const key = `categoryIcons/${Date.now()}_${categoryIconName}.${fileExtension}`;
 
     const updateData: { categoryIcon?: string; categoryName?: string } = {};
     try {
@@ -42,6 +44,7 @@ export const POST = async (request: NextRequest) => {
     } catch (error) {
       console.log(error, 'error by prisma');
     }
+    uploadToS3(formData.get('categoryIcon') as File, key);
     const { url, fields } = await s3Init(key, fileType);
 
     return new Response(JSON.stringify({ url, fields }), {

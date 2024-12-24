@@ -1,9 +1,8 @@
 import { S3Client, DeleteObjectCommand } from '@aws-sdk/client-s3';
 import { createPresignedPost } from '@aws-sdk/s3-presigned-post';
 export const s3Client = new S3Client({
-  forcePathStyle: true,
   region: process.env.AWS_REGION as string,
-  endpoint: process.env.image_url,
+
   credentials: {
     accessKeyId: process.env.AWS_ACCESS_KEY_ID as string,
     secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY as string,
