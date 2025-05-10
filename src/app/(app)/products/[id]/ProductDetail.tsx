@@ -34,7 +34,9 @@ async function ProductDetail({ id }: { id: string }) {
                 4.0/5 (100 reviews)
               </p>
             </div>
-            <AddToCart product={product} />
+            {
+              product?.stock && <AddToCart stock={product?.stock} />
+            }
           </div>
         </Suspense>
       </div>

@@ -27,9 +27,10 @@ type CartType = {
 
 interface CartState {
   cart: CartType[];
-  addToCart: (product: Product) => void;
+  addToCart: (product: { stockId: number; quantity: number }) => void;
   clearCart: () => void;
-  increment: (stockId: { stockId: Number }) => void;
+  increment: (stockId: number) => void;
+  decrement: (stockId: number) => void;
 }
 export interface Stock {
   id: number;
@@ -51,7 +52,10 @@ const useCartStore = create<CartState>(
   )(
     (set) => ({
       cart: [],
-      addToCart: (product) =>
+      addToCart: (product: {
+        stockId: number;
+        quantity: number;
+      }) =>
         set((state) => {
           const existingProduct = state.cart.find(
             (cartProduct) => cartProduct?.stockId === product.stockId
@@ -62,9 +66,9 @@ const useCartStore = create<CartState>(
               cart: state.cart.map((cartProduct) =>
                 cartProduct.stockId === product.stockId
                   ? {
-                      ...cartProduct,
-                      quantity: cartProduct.quantity + product.quantity,
-                    }
+                    ...cartProduct,
+                    quantity: cartProduct.quantity + product.quantity,
+                  }
                   : cartProduct
               ),
             };
@@ -96,9 +100,9 @@ const useCartStore = create<CartState>(
           cart: state.cart.map((cartProduct) =>
             cartProduct.stockId === stockId
               ? {
-                  ...cartProduct,
-                  quantity: Math.max(cartProduct.quantity - 1, 0), // Prevent negative quantities
-                }
+                ...cartProduct,
+                quantity: Math.max(cartProduct.quantity - 1, 0), // Prevent negative quantities
+              }
               : cartProduct
           ),
         })),

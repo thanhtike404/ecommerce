@@ -1,62 +1,62 @@
 generator client {
-  provider = "prisma-client-js"
+  provider      = "prisma-client-js"
+  binaryTargets = ["native", "linux-musl-openssl-3.0.x"]
+    output = "../../node_modules/.prisma/client"
 }
 
 datasource db {
-  provider = "mysql"
+  provider = "postgresql"
   url      = env("DATABASE_URL")
+
 }
 
 model Account {
-  id                 String  @id @default(cuid())
-  userId             String  @map("user_id")
-  type               String
-  provider           String
-  providerAccountId  String  @map("provider_account_id")
-  refresh_token      String? @db.Text
-  access_token       String? @db.Text
-  expires_at         Int?
-  token_type         String?
-  scope              String?
-  id_token           String? @db.Text
-  session_state      String?
- 
+  id                String  @id @default(cuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String?
+  access_token      String?
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String?
+  session_state     String?
+
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
- 
+
   @@unique([provider, providerAccountId])
-  @@map("accounts")
 }
- 
+
 model Session {
   id           String   @id @default(cuid())
-  sessionToken String   @unique @map("session_token")
-  userId       String   @map("user_id")
+  sessionToken String   @unique
+  userId       String
   expires      DateTime
-  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
- 
-  @@map("sessions")
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
- 
+
 model User {
   id            String    @id @default(cuid())
-  name          String?
-  email         String?   @unique
-  emailVerified DateTime? @map("email_verified")
+  name          String
+  email         String   @unique
+  emailVerified DateTime?
   image         String?
-  accounts      Account[]
-  sessions      Session[]
-  orders        Order[]
   role          Role      @default(USER)
-  @@map("users")
+  password      String?
+  accounts Account[]
+  sessions Session[]
+  orders   Order[]
 }
- 
+
 model VerificationToken {
   identifier String
   token      String
   expires    DateTime
- 
+
   @@unique([identifier, token])
-  @@map("verificationtokens")
 }
 
 model Category {
@@ -69,29 +69,31 @@ model Category {
 }
 
 model Product {
-  id          Int            @id @default(autoincrement())
+  id          Int      @id @default(autoincrement())
   name        String
-  description String?
-  imageUrl    String?
+  description String
+  imageUrl    String
   categoryId  Int
-  createdAt   DateTime       @default(now())
-  updatedAt   DateTime       @updatedAt
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
   statusId    Int
-  category    Category       @relation(fields: [categoryId], references: [id])
-  status      ProductStatus  @relation(fields: [statusId], references: [id])
-  images      ProductImage[]
-  stock       Stock[]
 
-  @@index([categoryId], map: "Product_categoryId_fkey")
-  @@index([statusId], map: "Product_statusId_fkey")
+  category Category       @relation(fields: [categoryId], references: [id])
+  status   ProductStatus  @relation(fields: [statusId], references: [id])
+  images   ProductImage[]
+  stock    Stock[]
+
+  @@index([categoryId])
+  @@index([statusId])
 }
 
 model ProductStatus {
   id        Int       @id @default(autoincrement())
   name      String
-  createdAt DateTime? @default(now()) @db.DateTime(0)
-  updatedAt DateTime? @default(now()) @db.DateTime(0)
-  products  Product[]
+  createdAt DateTime? @default(now())
+  updatedAt DateTime? @default(now())
+
+  products Product[]
 }
 
 model ProductImage {
@@ -100,9 +102,10 @@ model ProductImage {
   url       String
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-  product   Product  @relation(fields: [productId], references: [id])
 
-  @@index([productId], map: "ProductImage_productId_fkey")
+  product Product @relation(fields: [productId], references: [id])
+
+  @@index([productId])
 }
 
 model Stock {
@@ -114,74 +117,73 @@ model Stock {
   size      String?
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-  product   Product  @relation(fields: [productId], references: [id])
-orderItems OrderItem[] 
-  @@index([productId], map: "Stock_productId_fkey")
+
+  product    Product     @relation(fields: [productId], references: [id], onDelete: Cascade)
+  orderItems OrderItem[]
+
+  @@index([productId])
 }
 
 model Order {
-  id              Int      @id @default(autoincrement())
+  id              Int       @id @default(autoincrement())
   orderDate       DateTime
-  userId          String   @map("user_id")
+  userId          String
   totalAmount     Float
   paymentStatus   String
-  paymentMethodId Int      @map("paymentMethod_id")
+  paymentMethodId Int
   orderStatus     String?
   shippingAddress String?
   billingAddress  String?
-  sailDate        DateTime? // New field for sail date
-  deliverySteps   Json?     // New field for delivery steps (as JSON)
+  sailDate        DateTime?
+  deliverySteps   Json?
   createdAt       DateTime  @default(now())
   updatedAt       DateTime  @updatedAt
 
-  paymentMethod   PaymentMethod @relation(fields: [paymentMethodId], references: [id]) // Relation to PaymentMethod
-  user            User          @relation(fields: [userId], references: [id])
+  paymentMethod PaymentMethod @relation(fields: [paymentMethodId], references: [id])
+  user          User          @relation(fields: [userId], references: [id])
 
-  orderItems      OrderItem[]
+  orderItems OrderItem[]
 
-  @@index([userId], map: "Order_userId_fkey")
-  @@index([paymentMethodId], map: "Order_paymentMethodId_fkey")
+  @@index([userId])
+  @@index([paymentMethodId])
 }
-
-
-
 
 model OrderItem {
-  id          Int      @id @default(autoincrement())
-  orderId     Int
-  stockId     Int
-  quantity    Int
-  unitPrice   Float
-  totalPrice  Float
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  id         Int      @id @default(autoincrement())
+  orderId    Int
+  stockId    Int
+  quantity   Int
+  unitPrice  Float
+  totalPrice Float
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
 
-    order       Order    @relation(fields: [orderId], references: [id], onDelete: Cascade) // Specify onDelete here
-  stock       Stock    @relation(fields: [stockId], references: [id])
-  
-  @@index([orderId], map: "OrderItem_orderId_fkey")
-  @@index([stockId], map: "OrderItem_stockId_fkey")
+  order Order @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  stock Stock @relation(fields: [stockId], references: [id],onDelete: Cascade)
+
+  @@index([orderId])
+  @@index([stockId])
 }
+
 model PaymentMethod {
-  id    Int    @id @default(autoincrement())
-  name  String @unique
+  id     Int     @id @default(autoincrement())
+  name   String  @unique
   orders Order[]
 }
+
 model HomePageBannner {
-  id        Int      @id @default(autoincrement())
-  title     String?  // Optional title for the banner
-  imageUrl  String   // URL for the banner image
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  status    BannerStatus @default(ACTIVE) // Enum to manage banner status (e.g., active, inactive)
+  id        Int          @id @default(autoincrement())
+  title     String?
+  imageUrl  String
+  createdAt DateTime     @default(now())
+  updatedAt DateTime     @updatedAt
+  status    BannerStatus @default(ACTIVE)
 }
 
 enum BannerStatus {
   ACTIVE
   INACTIVE
 }
-
-
 
 enum Role {
   USER

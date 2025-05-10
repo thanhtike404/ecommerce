@@ -3,11 +3,22 @@ import React, { useState, ChangeEvent } from 'react';
 import useCartStore, { Product } from '@/store/home/cartStore';
 import PriceAdjuster from './priceAdjuster';
 
-function AddToCart({ product }: { product: Product }) {
+
+
+function AddToCart({ stock }: {
+  stock: {
+    id: number;
+    size: string | null;
+    price: number;
+    stock: number;
+    sku: string;
+  }[]
+}) {
+  console.log(stock, 'product in add to cart');
   const addToCart = useCartStore((state) => state.addToCart); // Get the addToCart function
 
   const [selectedItem, setSelectedItem] = useState(
-    product.stock ? product.stock[0] : null
+    stock ? stock[0] : null
   );
   const [quantity, setQuantity] = useState(1);
 
@@ -21,12 +32,12 @@ function AddToCart({ product }: { product: Product }) {
   };
 
   const stockHandler = (e: ChangeEvent<HTMLSelectElement>) => {
-    const selectedItem = product.stock?.find(
+    const selectedItem = stock?.find(
       (item) => item.id === parseInt(e.target.value, 10)
     );
     setSelectedItem(selectedItem || null);
     if (selectedItem) {
-      setQuantity(1); // Reset quantity to 1 when a new size is selected
+      setQuantity(1);
     }
   };
 
@@ -36,14 +47,14 @@ function AddToCart({ product }: { product: Product }) {
 
   return (
     <div className="p-4 rounded-lg bg-white">
-      {product.stock && (
+      {stock && (
         <select
           name="size"
           id="size"
           className="py-2 px-3 w-full rounded-md mb-3 bg-white border focus:outline-none focus:ring-2 focus:ring-blue-500"
           onChange={stockHandler}
         >
-          {product.stock.map((item) => (
+          {stock.map((item) => (
             <option key={item.id} value={item.id}>
               {item.size ?? 'N/A'}
             </option>

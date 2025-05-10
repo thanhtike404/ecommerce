@@ -2,129 +2,146 @@
 import React, { useState, useRef, useEffect } from 'react';
 import Image from 'next/image';
 import { motion } from 'framer-motion';
-import './style.css';
 import { useSession } from 'next-auth/react';
 
-function ProductImage({ mainImage, images }) {
-  const session = useSession();
+// Fix type errors with proper interface
+interface ImageItem {
+  id?: number;
+  imageUrl: string;
+}
+
+interface ProductImageProps {
+  mainImage: string;
+  images: ImageItem[];
+  title?: string;
+}
+
+function ProductImage({ mainImage, images, title = "Product preview" }: ProductImageProps) {
+  const { data: session } = useSession();
   const [selectedImage, setSelectedImage] = useState(mainImage);
   const magnifierRef = useRef<HTMLDivElement>(null);
   const imgRef = useRef<HTMLImageElement>(null);
-  useEffect(() => {
-    console.log(session, 'session');
-  }, [session]);
+  const containerRef = useRef<HTMLDivElement>(null);
+  const [magnifierActive, setMagnifierActive] = useState(false);
 
   useEffect(() => {
-    const magnifierGlass = magnifierRef.current;
+    if (!imgRef.current || !magnifierRef.current || !containerRef.current) return;
+
     const img = imgRef.current;
+    const magnifierGlass = magnifierRef.current;
+    const container = containerRef.current;
 
-    function magnify(img, magnifierGlass) {
-      let w, h, bw;
-      magnifierGlass.style.backgroundImage = `url(${img.src})`;
-      magnifierGlass.style.backgroundRepeat = 'no-repeat';
-      magnifierGlass.style.backgroundSize = `${img.width * 2}px ${
-        img.height * 2
-      }px`;
-      bw = 3;
-      w = magnifierGlass.offsetWidth / 2;
-      h = magnifierGlass.offsetHeight / 2;
+    const handleMouseMove = (e: MouseEvent) => {
+      if (!magnifierActive) return;
 
-      function moveMagnifier(e) {
-        let pos, x, y;
-        e.preventDefault();
-        pos = getCursorPos(e);
-        x = pos.x;
-        y = pos.y;
-        if (x > img.width - w / 2) {
-          x = img.width - w / 2;
-        }
-        if (x < w / 2) {
-          x = w / 2;
-        }
-        if (y > img.height - h / 2) {
-          y = img.height - h / 2;
-        }
-        if (y < h / 2) {
-          y = h / 2;
-        }
-        magnifierGlass.style.left = `${x - w}px`;
-        magnifierGlass.style.top = `${y - h}px`;
-        magnifierGlass.style.backgroundPosition = `-${x * 2 - w + bw}px -${
-          y * 2 - h + bw
-        }px`;
-      }
+      const { left, top, width, height } = container.getBoundingClientRect();
 
-      function getCursorPos(e) {
-        let a,
-          x = 0,
-          y = 0;
-        e = e || window.event;
-        a = img.getBoundingClientRect();
-        x = e.pageX - a.left;
-        y = e.pageY - a.top;
-        x = x - window.pageXOffset;
-        y = y - window.pageYOffset;
-        return { x: x, y: y };
-      }
+      // Calculate cursor position relative to the image
+      const x = e.clientX - left;
+      const y = e.clientY - top;
 
-      magnifierGlass.addEventListener('mousemove', moveMagnifier);
-      img.addEventListener('mousemove', moveMagnifier);
-      magnifierGlass.addEventListener('mouseout', () => {
-        magnifierGlass.style.opacity = 0;
-      });
-      magnifierGlass.addEventListener('mouseover', () => {
-        magnifierGlass.style.opacity = 1;
-      });
-    }
+      // Ensure the magnifier stays within the image boundaries
+      const magnifierSize = magnifierGlass.offsetWidth;
+      const posX = Math.max(0, Math.min(width - magnifierSize, x - magnifierSize / 2));
+      const posY = Math.max(0, Math.min(height - magnifierSize, y - magnifierSize / 2));
 
-    if (img && magnifierGlass) {
-      magnify(img, magnifierGlass);
-    }
-  }, [selectedImage]);
+      // Set the magnifier position
+      magnifierGlass.style.left = `${posX}px`;
+      magnifierGlass.style.top = `${posY}px`;
+
+      // Calculate the background position for zoomed effect
+      const zoomFactor = 2;
+      const bgX = (x / width) * 100;
+      const bgY = (y / height) * 100;
+
+      magnifierGlass.style.backgroundImage = `url(${selectedImage})`;
+      magnifierGlass.style.backgroundPosition = `${bgX}% ${bgY}%`;
+      magnifierGlass.style.backgroundSize = `${width * zoomFactor}px ${height * zoomFactor}px`;
+    };
+
+    const handleMouseEnter = () => {
+      setMagnifierActive(true);
+      magnifierGlass.style.opacity = '1';
+    };
+
+    const handleMouseLeave = () => {
+      setMagnifierActive(false);
+      magnifierGlass.style.opacity = '0';
+    };
+
+    // Add event listeners
+    container.addEventListener('mousemove', handleMouseMove as EventListener);
+    container.addEventListener('mouseenter', handleMouseEnter);
+    container.addEventListener('mouseleave', handleMouseLeave);
+
+    // Clean up event listeners
+    return () => {
+      container.removeEventListener('mousemove', handleMouseMove as EventListener);
+      container.removeEventListener('mouseenter', handleMouseEnter);
+      container.removeEventListener('mouseleave', handleMouseLeave);
+    };
+  }, [selectedImage, magnifierActive]);
 
   return (
-    <div className="flex flex-col items-center m-4">
-      <h1>
-        Session {session.data?.user?.name} {session.data?.user?.email}
-      </h1>
-      {mainImage && (
-        <motion.div
-          key={selectedImage}
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ duration: 0.5 }}
-          className="w-full  mb-4"
-        >
-          <div className="img-magnifier-container">
+    <div className="flex flex-col items-center max-w-lg mx-auto my-8">
+      {session?.user && (
+        <div className="mb-4 text-sm text-gray-600">
+          Logged in as: {session.user.name || session.user.email}
+        </div>
+      )}
+
+      {/* Main image container with fixed dimensions */}
+      <div className="w-full h-96 relative mb-6 bg-white" ref={containerRef}>
+        {selectedImage && (
+          <motion.div
+            key={selectedImage}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.3 }}
+            className="w-full h-full rounded-lg overflow-hidden shadow-lg"
+          >
             <Image
+              src={selectedImage}
+              alt={title}
+              className="object-contain"
+              ref={imgRef}
+              priority
               width={500}
               height={500}
-              id="myimage"
-              src={selectedImage}
-              alt="product"
-              className="w-full h-full object-cover rounded-lg shadow-md"
-              ref={imgRef}
+              sizes="(max-width: 768px) 100vw, 500px"
             />
-            <div ref={magnifierRef} className="img-magnifier-glass"></div>
-          </div>
-        </motion.div>
-      )}
-      {images && (
-        <div className="flex space-x-4 mt-4 overflow-x-auto">
-          {images.map((image) => (
+            <div
+              ref={magnifierRef}
+              className="absolute pointer-events-none rounded-full shadow-lg border-2 border-white opacity-0 transition-opacity w-32 h-32 bg-no-repeat"
+              style={{
+                backgroundSize: 'cover',
+                zIndex: 10
+              }}
+            />
+          </motion.div>
+        )}
+      </div>
+
+      {/* Thumbnail gallery with fixed sizes */}
+      {images && images.length > 0 && (
+        <div className="flex flex-wrap gap-3 justify-center mt-4">
+          {images.map((image, index) => (
             <motion.div
-              key={image.id}
+              key={image.id || `img-${index}`}
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
               onClick={() => setSelectedImage(image.imageUrl)}
-              className="cursor-pointer"
+              className={`cursor-pointer rounded-md overflow-hidden border-2 transition-all w-16 h-16 relative bg-white ${selectedImage === image.imageUrl ? 'border-blue-500' : 'border-gray-200'
+                }`}
             >
               <Image
-                width={100}
-                height={100}
+                height={400}
+                width={404}
                 src={image.imageUrl}
-                alt="product thumbnail"
-                className="w-24 h-24 object-cover rounded-lg shadow-sm"
+                alt={`${title} thumbnail ${index + 1}`}
+                className="object-contain"
+
+
               />
             </motion.div>
           ))}

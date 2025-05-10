@@ -24,11 +24,11 @@ function CartItem({
         const response = await axios.get(`/api/v1/cart/${stockId}`);
         return response.data;
       } catch (error) {
-        throw new Error('Error fetching cart item:', error);
+        console.error('Error fetching cart item:', error);
       }
     },
     staleTime: 1000 * 60 * 5, // Cache the result for 5 minutes
-    cacheTime: 1000 * 60 * 5, // Cache the result for 5 minutes
+
     refetchOnWindowFocus: false, // Only refetch when the window is not in focus
   });
 
