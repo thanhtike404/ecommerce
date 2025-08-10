@@ -40,50 +40,80 @@ export default function Carousel({ banners }: { banners: Banner[] }) {
   };
 
   return (
-    <div className="w-full h-[85vh] relative group">
+    <div className="w-full h-[90vh] relative group overflow-hidden">
+      {/* Background with overlay */}
       <div
         style={{ backgroundImage: `url(${banners[currentIndex]?.imageUrl})` }}
-        className="w-full h-full bg-top bg-cover duration-500 flex items-end justify-center"
+        className="w-full h-full bg-center bg-cover duration-700 ease-in-out relative"
       >
-        <div className="flex flex-col items-center gap-2 text-white mb-20">
-          <p className="text-lg md:text-2xl">The Best Look</p>
-          <h1 className="text-3xl md:text-6xl text-center font-bold">
-            Anytime Anywhere
-          </h1>
-          <p className="text-base md:text-lg">Starts from 10,000 MMK</p>
-          <ViewBtn>View</ViewBtn>
-        </div>
-      </div>
-      {/* Left Arrow */}
-      <div
-        onClick={prevSlide}
-        className="hidden group-hover:block absolute top-[50%] -translate-x-0 translate-y-[-50%] left-5 text-2xl rounded-xl px-1.5 lg:px-3 py-10 md:py-14 lg:py-20 bg-black/20 backdrop-blur-md text-white cursor-pointer border border-gray-400/50"
-      >
-        <BsChevronCompactLeft size={30} />
-      </div>
-      {/* Right Arrow */}
-      <div
-        onClick={nextSlide}
-        className="hidden group-hover:block absolute top-[50%] -translate-x-0 translate-y-[-50%] right-5 text-2xl rounded-xl px-1.5 lg:px-3 py-10 md:py-14 lg:py-20 bg-black/20 backdrop-blur-md text-white cursor-pointer border border-gray-400/50"
-      >
-        <BsChevronCompactRight size={30} />
-      </div>
-      <div className="flex top-4 justify-center py-2">
-        {banners.map((banner, slideIndex) => (
-          <div
-            key={banner.id}
-            onClick={() => goToSlide(slideIndex)}
-            className="text-2xl cursor-pointer"
-          >
-            <div
-              className={`${
-                slideIndex === currentIndex ? 'text-black' : 'text-grayColor'
-              }`}
-            >
-              <RxDotFilled />
+        {/* Dark overlay for better text readability */}
+        <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent"></div>
+        
+        {/* Hero Content */}
+        <div className="absolute inset-0 flex items-center justify-center">
+          <div className="text-center text-white max-w-4xl px-6">
+            <div className="mb-6">
+              <span className="inline-block px-4 py-2 bg-white/10 backdrop-blur-sm rounded-full text-sm font-medium border border-white/20">
+                Premium Vape Collection
+              </span>
+            </div>
+            <h1 className="text-4xl md:text-7xl font-bold mb-6 leading-tight">
+              <span className="block">The Best Look</span>
+              <span className="bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent">
+                Anytime Anywhere
+              </span>
+            </h1>
+            <p className="text-xl md:text-2xl mb-8 text-gray-200">
+              Premium quality vapes starting from <span className="font-bold text-white">10,000 MMK</span>
+            </p>
+            <div className="flex flex-col sm:flex-row gap-4 justify-center">
+              <button className="px-8 py-4 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 rounded-full font-semibold text-lg transition-all duration-300 hover:scale-105 shadow-xl">
+                Shop Now
+              </button>
+              <button className="px-8 py-4 bg-white/10 backdrop-blur-sm border border-white/30 hover:bg-white/20 rounded-full font-semibold text-lg transition-all duration-300">
+                Learn More
+              </button>
             </div>
           </div>
+        </div>
+      </div>
+
+      {/* Navigation Arrows */}
+      <button
+        onClick={prevSlide}
+        className="absolute top-1/2 -translate-y-1/2 left-6 w-12 h-12 bg-white/10 backdrop-blur-md border border-white/20 rounded-full flex items-center justify-center text-white hover:bg-white/20 transition-all duration-300 opacity-0 group-hover:opacity-100"
+      >
+        <BsChevronCompactLeft size={24} />
+      </button>
+      
+      <button
+        onClick={nextSlide}
+        className="absolute top-1/2 -translate-y-1/2 right-6 w-12 h-12 bg-white/10 backdrop-blur-md border border-white/20 rounded-full flex items-center justify-center text-white hover:bg-white/20 transition-all duration-300 opacity-0 group-hover:opacity-100"
+      >
+        <BsChevronCompactRight size={24} />
+      </button>
+
+      {/* Dots Indicator */}
+      <div className="absolute bottom-8 left-1/2 -translate-x-1/2 flex gap-2">
+        {banners.map((banner, slideIndex) => (
+          <button
+            key={banner.id}
+            onClick={() => goToSlide(slideIndex)}
+            className={`w-3 h-3 rounded-full transition-all duration-300 ${
+              slideIndex === currentIndex 
+                ? 'bg-white scale-125' 
+                : 'bg-white/50 hover:bg-white/75'
+            }`}
+          />
         ))}
+      </div>
+
+      {/* Progress Bar */}
+      <div className="absolute bottom-0 left-0 w-full h-1 bg-white/20">
+        <div 
+          className="h-full bg-gradient-to-r from-blue-500 to-purple-500 transition-all duration-[4000ms] ease-linear"
+          style={{ width: `${((currentIndex + 1) / banners.length) * 100}%` }}
+        />
       </div>
     </div>
   );
